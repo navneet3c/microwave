@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<title>Microwave filters
+	</title>
+	<link href="files/style.css" rel="stylesheet" type="text/css">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<script type="text/javascript" src="files/jquery.min.js"></script>
+	<script type="text/javascript" src="files/script.js"></script>
+</head>
+<body class="stretch">
+<div id="top-container">
+	<div class="container">
+		<div id="filter-form-container">
+				<form action="" class="input-form">
+					<table>
+						<tbody>
+						<tr>
+							<td colspan="2">Microwave Filter Design</td>
+						</tr>
+						<tr>
+							<td>Response Type:</td>
+							<td>
+								<select size="1" id="responseSelect" name="response">
+									<option value="1" selected>Butterworth Filter</option>
+									<option value="2">Chebychev Filter</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Filter Type:</td>
+							<td>
+								<select size="1" id="filterSelect" name="filter">
+									<option value="1" selected>Low Pass Filter</option>
+									<option value="2">High Pass Filter</option>
+									<option value="3">Band Pass Filter</option>
+									<option value="4">Band Reject Filter</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>
+								<input type="submit" value="Next" name="next">
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</form>
+		</div>
+	</div>
+		<div class="container">
+			<div id="frequency-form-container">
+				<form action="" class="input-form">
+					<table>
+						<tbody>
+						<tr>
+							<td>Order of filter:</td>
+							<td><input type="number" min="3" value="3" name="order"></td>
+						</tr>
+						<tr>
+							<td>Bandwidth:</td>
+							<td>
+								<input type="number" name="bandwidth">
+								<select size="1" name="bandwidth-unit">
+									<option value="1">Hz</option>
+									<option value="3">kHz</option>
+									<option value="6">MHz</option>
+									<option value="9" selected>GHz</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Cutoff Frequency:</td>
+							<td>
+								<input type="number" name="fc">
+								<select size="1" name="fc-unit">
+									<option value="1">Hz</option>
+									<option value="3">kHz</option>
+									<option value="6">MHz</option>
+									<option value="9" selected>GHz</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Passband attenuation:</td>
+							<td><input type="number" name="fp"></td>
+						</tr>
+						<tr id="frequency-table-append">
+							<td>Stopband attenuation:</td>
+							<td><input type="number" name="fs"></td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>
+								<input type="submit" value="Next" name="next">
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+		</div>
+	<div class="container">
+		<div id="lumped-output">
+				
+		</div>
+	</div>
+	<div class="container">
+		<div id="lumped-form-container">
+				<form action="" class="input-form">
+					<table>
+						<tbody>
+						<tr>
+							<td>Characteristic Impednce Z<sub>0</sub>:</td>
+							<td><input type="number" name="z0"></td>
+						</tr>
+						<tr>
+							<td>Relative permittivity &epsilon;<sub>r</sub></td>
+							<td><input type="number" name="er"></td>
+						</tr>
+						<tr>
+							<td>Type of design:</td>
+							<td>
+								<select size="1" name="method">
+									<option value="1" selected>Stub Method</option>
+									<option value="2">Stepped-Impedance Method</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Transmission line:</td>
+							<td>
+								<select size="1" name="line">
+									<option value="1" selected>Microstrip Line</option>
+									<option value="2">Co-planar Waveguide</option>
+								</select>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</form>
+		</div>
+	</div>
+	<div class="container">
+		<div id="micro-output-output">
+				
+		</div>
+	</div>
+</div>
+</body>
+</html>
