@@ -15,4 +15,16 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 	});
+	
+	$(".scrollnext").click(function(){
+		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))});
+		return false;
+	});
+	$("#lumped-next").click(function(){
+		$("#container3").animate({"left":$("#container4").css("left")});
+		$("#lumped-next-container").fadeOut();
+	});
+	$("#method-next").click(function(){
+		$("#container3").animate({"left":$("#container5").css("left")});
+	});
 });

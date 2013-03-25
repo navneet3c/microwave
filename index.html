@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-	<title>Microwave filters
+	<title>Microwave Filter Design
 	</title>
 	<link href="files/style.css" rel="stylesheet" type="text/css">
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -10,14 +10,14 @@
 	<script type="text/javascript" src="files/script.js"></script>
 </head>
 <body class="stretch">
-<div id="top-container">
-	<div class="container">
+<div id="top-container" class="stretch">
+	<div class="container" id="container1">
 		<div id="filter-form-container">
 				<form action="" class="input-form">
 					<table>
 						<tbody>
 						<tr>
-							<td colspan="2">Microwave Filter Design</td>
+							<td colspan="2"><h2>Select Filter</h2></td>
 						</tr>
 						<tr>
 							<td>Response Type:</td>
@@ -42,7 +42,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td>
-								<input type="submit" value="Next" name="next">
+								<input type="submit" value="Next" name="next" class="scrollnext">
 							</td>
 						</tr>
 						</tbody>
@@ -50,11 +50,14 @@
 				</form>
 		</div>
 	</div>
-		<div class="container">
+		<div class="container" id="container2">
 			<div id="frequency-form-container">
 				<form action="" class="input-form">
 					<table>
 						<tbody>
+						<tr>
+							<td colspan=2><h2>Select Filter Characteristics</h2></td>
+						</tr>
 						<tr>
 							<td>Order of filter:</td>
 							<td><input type="number" min="3" value="3" name="order"></td>
@@ -94,7 +97,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td>
-								<input type="submit" value="Next" name="next">
+								<input type="submit" value="Next" name="next" class="scrollnext">
 							</td>
 						</tr>
 						</tbody>
@@ -102,16 +105,25 @@
 				</form>
 			</div>
 		</div>
-	<div class="container">
-		<div id="lumped-output">
+	<div class="container" id="container3">
+		<div id="lumped-output-container">
+			<h2>Lumped Components Output</h2>
+			<div id="lumped-output">
 				
+			</div>
+			<div id="lumped-next-container">
+				<button id="lumped-next" class="scrollnext">Next</button>
+			</div>
 		</div>
 	</div>
-	<div class="container">
-		<div id="lumped-form-container">
+	<div class="container" id="container4">
+		<div id="method-form-container">
 				<form action="" class="input-form">
 					<table>
 						<tbody>
+						<tr>
+							<td colspan=2><h2>Transmission Line Properties</h2></td>
+						</tr>
 						<tr>
 							<td>Characteristic Impednce Z<sub>0</sub>:</td>
 							<td><input type="number" name="z0"></td>
@@ -138,13 +150,20 @@
 								</select>
 							</td>
 						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>
+								<input type="submit" value="Next" name="next" id="method-next" class="scrollnext">
+							</td>
+						</tr>
 						</tbody>
 					</table>
 				</form>
 		</div>
 	</div>
-	<div class="container">
+	<div class="container" id="container5">
 		<div id="micro-output-output">
+			<h2>Filter Design Output</h2>
 				
 		</div>
 	</div>
