@@ -1,5 +1,9 @@
 body{
 	overflow: hidden;
+	background: #eee url(../images/noise.png);
+	color: #fefefe;
+	font-family: Segoe UI,sans-serif;
+	font-size: 20px;
 }
 #top-container{
 	left: 0%;
@@ -13,6 +17,7 @@ body{
 	margin: 0px;
 	top: 0px;
 	padding: 0px;
+	text-align: center;
 }
 #container1{
 	left: 0%;
@@ -20,15 +25,101 @@ body{
 #container2{
 	left: 100%;
 }
-#container3{
-	left: 200%;
-}
 #container4{
 	left: 300%;
 }
 #container5{
 	left: 400%;
 }
-.container{
+table{
+	text-align: left !important;
+}
+table td{
+	padding: 10px;
+}
+input[type="text"],input[type="number"],select{
+	padding: 8px;
+	font-size: 18px;
+	border: 1px solid #000;
+	font-family: segoe UI;
+	min-width: 250px;
+}
+input[type="number"]{
+	min-width: 230px;
+	padding-left: 10px; 
+}
+.units{
+	min-width: 100px;
+	padding-left: 10px; 
+}
+input[type="submit"],button{
+	border: 2px solid #000;
+	background: #fefefe url(../images/noise.png);
+	padding: 10px 20px;
+	font-size: 20px;
+	font-weight: bold;
+	font-family: Segoe UI;
+	cursor: pointer;
+}
+#filter-form-container{
+	padding: 50px;
+	margin: 0px auto;
+	width: 40%;
+	margin-top: 8%;
+	background-color: #999;
+	border-radius: 30px;
+	box-shadow: 0px 0px 40px 10px #777;
+}
+#filter-form-container table{
+	margin: 0px auto;
+}
+#frequency-form-container{
+	padding: 50px;
+	margin: 0px auto;
+	padding-top: 0px;
+	width: 50%;
+	margin-top: 3%;
+	background-color: #999;
+	border-radius: 30px;
+	box-shadow: 0px 0px 40px 10px #777;
+}
+#frequency-form-container table,#method-form-container table,#micro-output-output table{
+	margin: 0px auto;
+}
+#container3{
+	left: 235%;
+}
+#lumped-output-container{
+	padding: 10px;
+	padding-top: 10px;
+	width: 44%;
+	margin-top: 3%;
+	background-color: #999;
+	border-radius: 30px;
+	box-shadow: 0px 0px 40px 10px #777;
+}
+#lumped-output{
 	
+}
+#method-form-container{
+	padding: 50px;
+	margin: 0px auto;
+	padding-top: 0px;
+	width: 42%;
+	margin-top: 3%;
+	margin-left: 48%;
+	background-color: #999;
+	border-radius: 30px;
+	box-shadow: 0px 0px 40px 10px #777;
+}
+#micro-output-output{
+	padding: 50px;
+	margin: 0px auto;
+	padding-top: 10px;
+	width: 46%;
+	margin-top: 3%;
+	margin-left: 47%;
+	background-color: #999;
+	border-radius: 30px;
+	box-shadow: 0px 0px 40px 10px #777;
 }

@@ -66,7 +66,7 @@
 							<td>Bandwidth:</td>
 							<td>
 								<input type="number" name="bandwidth">
-								<select size="1" name="bandwidth-unit">
+								<select size="1" name="bandwidth-unit" class="units">
 									<option value="1">Hz</option>
 									<option value="3">kHz</option>
 									<option value="6">MHz</option>
@@ -78,7 +78,7 @@
 							<td>Cutoff Frequency:</td>
 							<td>
 								<input type="number" name="fc">
-								<select size="1" name="fc-unit">
+								<select size="1" name="fc-unit" class="units">
 									<option value="1">Hz</option>
 									<option value="3">kHz</option>
 									<option value="6">MHz</option>
@@ -108,9 +108,7 @@
 	<div class="container" id="container3">
 		<div id="lumped-output-container">
 			<h2>Lumped Components Output</h2>
-			<div id="lumped-output">
-				
-			</div>
+			<div id="lumped-output"></div><br />
 			<div id="lumped-next-container">
 				<button id="lumped-next" class="scrollnext">Next</button>
 			</div>
