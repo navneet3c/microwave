@@ -59,45 +59,29 @@
 							<td colspan=2><h2>Select Filter Characteristics</h2></td>
 						</tr>
 						<tr>
+							<td>Filter impedance (ohm):</td>
+							<td><input type="number" min="1" value="50" name="r0"></td>
+						</tr>
+						<tr>
 							<td>Order of filter:</td>
 							<td><input type="number" min="3" value="3" name="order"></td>
 						</tr>
-						<tr>
-							<td>Bandwidth:</td>
-							<td>
-								<input type="number" name="bandwidth">
-								<select size="1" name="bandwidth-unit" class="units">
-									<option value="1">Hz</option>
-									<option value="3">kHz</option>
-									<option value="6">MHz</option>
-									<option value="9" selected>GHz</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
+						<tr id="frequency-table-append">
 							<td>Cutoff Frequency:</td>
 							<td>
-								<input type="number" name="fc">
+								<input type="number" name="fc" value="1">
 								<select size="1" name="fc-unit" class="units">
-									<option value="1">Hz</option>
+									<option value="0">Hz</option>
 									<option value="3">kHz</option>
 									<option value="6">MHz</option>
 									<option value="9" selected>GHz</option>
 								</select>
 							</td>
-						</tr>
-						<tr>
-							<td>Passband attenuation:</td>
-							<td><input type="number" name="fp"></td>
-						</tr>
-						<tr id="frequency-table-append">
-							<td>Stopband attenuation:</td>
-							<td><input type="number" name="fs"></td>
 						</tr>
 						<tr>
 							<td>&nbsp;</td>
 							<td>
-								<input type="submit" value="Next" name="next" class="scrollnext">
+								<input type="submit" value="Next" name="next" id="calculate-lumped" class="scrollnext">
 							</td>
 						</tr>
 						</tbody>
