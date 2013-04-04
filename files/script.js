@@ -1,4 +1,4 @@
-var response,filter,order,fc,bandwidth,ripple,r0,z0,er,method,line,g;
+var response,filter,order,fc,bandwidth,ripple,r0,z0,er,method,line,g,Er;
 $(document).ready(function(){
 	$("#responseSelect").change(function(){
 		if($(this).val()==2)
@@ -131,5 +131,7 @@ $(document).ready(function(){
 	$("#method-next").click(function(){
 		$("#container3").animate({"left":$("#container5").css("left")});
 		//calculate circuit diagram
+		console.log(response+filter);
+		
 	});
 });
