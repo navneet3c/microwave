@@ -53,7 +53,7 @@ $(document).ready(function(){
 						</tr>");
 		fc=$('#frequency-form-container input[name=fc]').val()*Math.pow(10,$('#frequency-form-container select[name=fc-unit]').val())
 		g=new Array(),k=new Array();
-		g[0]=[1,3];//type: 1=cap;0=ind,3=res;
+		g[0]=[1,3];//type: 0=cap;1=ind,3=res;
 		if(response==1){//butterworth g
 			for(i=1;i<=order;++i){
 				g[i]=[2*Math.sin((2*i-1)*Math.PI/(2*order)),i%2];
@@ -91,21 +91,26 @@ $(document).ready(function(){
 	$("#method-next").click(function(){
 		$("#container3").animate({"left":$("#container5").css("left")});
 		//calculate circuit diagram
-		console.log(response+filter);
-		Er=$("#filter-form-container select[name=er]").val();
-		line=$("#filter-form-container select[name=line]").val();
+		Er=parseInt($("#method-form-container input[name=er]").val());
 		if(filter<=2){
-			method=$("#filter-form-container select[name=method]").val();
+			method=$("#method-form-container select[name=method]").val();
 			if(method==1){//stub for lpf hpf
 			//k starts from 1, l for lpf, c for hpf
-			for(i=g.length-2;i>0;i--)
-				if(g[i][1]==1)
-					g[i][0]=1/g[i][0];
-			var N=1+(1/g[1][0]),j=3,z_half;
+			var N=1+(1/g[1][0]),j,z_half;
+			if(filter==1){
+				for(i=g.length-2;i>0;i--){
+				if(g[i][1]==0) { g[i][0]=(1/g[i][0]);}
+				}
       k[1]=N;
       k[2]=g[1][0]*N;
-			
-			for(i=2;i<g.length-1;i++){
+			j=3;
+			}else{
+				for(i=g.length-2;i>0;i--)
+				if(g[i][1]==0)
+					g[i][0]=1/g[i][0];
+				j=2;
+			}
+			for(i=2;i<g.length-2;i++){
 				if(i%2==1){
 					z_half=g[i][0]/2;
 					N=1+(1/z_half);
@@ -120,18 +125,19 @@ $(document).ready(function(){
 			N=1+(1/g[i][0]);        
       k[j]=g[i][0]*N;
       k[j+1]=N;
+			
 			for(i=k.length-1;i>=0;i--)
 				k[i]*=50;
 			var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
-			for(i=1;i<=2*n-1;++i){
+			for(i=1;i<=2*order-1;++i){
 				A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
 				B=377*Math.PI/(2*k[i]*Math.sqrt(Er));
 				w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
-				w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(log(B-1)+0.39-0.61/Er));
+				w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
 				if ((w1<=2*1.588) && (w1>0))
-					z[i]=w1;
+					k[i]=w1;
 				else if ((w2>2*1.588) && (w2>0))
-					z[i]=w2;
+					k[i]=w2;
 			}
 			length=3e11/(fc*8*Math.sqrt(Er));
 			z_feed=50;//feed
@@ -141,8 +147,44 @@ $(document).ready(function(){
 			w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
 			if ((w1_feed<=2*1.588) && (w1_feed>0))
 				w_feed=w1_feed;
-			elseif ((w2_feed>2*1.588) && (w2_feed>0))
+			else if ((w2_feed>2*1.588) && (w2_feed>0))
 				w_feed=w2_feed;
+			
+	var canvas=document.getElementById("microcanvas");
+	var context = canvas.getContext('2d');
+  canvas.width = $("#micro-output-output").width();
+	canvas.height= 450;
+	context.fillStyle="#FFFFFF";
+  context.fillRect(0,0,canvas.width,canvas.height);
+context.fillStyle="#aa8833";
+x=20;
+y=1.8;
+context.font = "bold 16px sans-serif";
+var sx=canvas.width/(order*25),sy=canvas.height/30;
+for(i=1;i<=(2*order)-1;i++){
+if (i%2==1){
+	context.fillStyle="#aa8833";
+	context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
+	context.fillStyle="#000000";
+	context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+	x=x+k[i]/2;
+	y=y+length;
+}else{
+	context.fillStyle="#aa8833";
+    context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
+		context.fillStyle="#000000";
+		context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+    x=x+length-(k[i+1]/2);
+    y=y-length;
+}
+console.log(sx,sy,x,y,k[i],length,x*sx)
+}
+context.fillStyle="#bb9944";
+//xlabel('Length in mm','fontsize',12,'fontweight','b');
+//ylabel('Width in mm','fontsize',12,'fontweight','b');
+context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+			
 			
 			}else{//stepped impedance for lpf hpf
 				//g values have been calculated, now calculating the capacitor and inductor values
@@ -155,7 +197,7 @@ $(document).ready(function(){
 						if(g[i][1]==0){//ind take w/h as 
 							g[i][0]*=r0/w;
 							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
-							width(i)=.1588*.2*10;
+							width[i]=.1588*.2*10;
 						}else if(g[i][1]==1){//cap
 							g[i][0]*=1/(r0*w);
 							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
