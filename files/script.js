@@ -35,7 +35,7 @@ $(document).ready(function(){
 	
 	$("#calculate-lumped").click(function(){
 	//get values
-		response=$('#filter-form-container select[name=response]').val()
+		response=$('#filter-form-container select[name=response]').val()//chebyshev r butterworth
 		filter=$('#filter-form-container select[name=filter]').val()
 		r0=$('#frequency-form-container input[name=r0]').val()
 		order=$('#frequency-form-container input[name=order]').val()
@@ -66,8 +66,10 @@ $(document).ready(function(){
 				g[i+1]=[1,3];
 			}else g[i]=[1,3]
 		}
+
+		//g values have been calculated, now calculating the capacitor and inductor values
 		var w=2*Math.PI*fc;
-		if(filter==1)//low pass 
+		if(filter==1){//low pass 
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0)//ind
 					g[i][0]*=r0/w;
@@ -75,7 +77,7 @@ $(document).ready(function(){
 					g[i][0]*=1/(r0*w);
 				else if(g[i][1]==3)//res
 					g[i][0]*=r0;
-		else if(filter==2)//high pass
+		}else if(filter==2){//high pass
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0){//ind
 					g[i][0]=1/(r0*w*g[i][0]);
@@ -85,7 +87,7 @@ $(document).ready(function(){
 					g[i][1]=0;
 				}else if(g[i][1]==3)//res
 					g[i][0]*=r0;
-		else if(filter==3){//band pass
+		}else if(filter==3){//band pass
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0){//ind conv to series 2
 					var t=g[i][0];
