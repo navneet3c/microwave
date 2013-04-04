@@ -192,18 +192,33 @@ end;*/
 					}
 					
 				}else if(filter==2){//high pass
+					lamda_eff=(3*Math.pow(10,8))/(w*Math.sqrt(Er));
+					var length = new Array();
+					var width = new Array();
 					for(i=g.length-1;i>=0;i--)
-						if(g[i][1]==0){//ind
+						if(g[i][1]==0){//cap
 							g[i][0]=1/(r0*w*g[i][0]);
 							g[i][1]=1;
-						}else if(g[i][1]==1){//cap
+							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
+							width[i]=.1588*.8*10;
+						}else if(g[i][1]==1){//ind
 							g[i][0]=r0/(g[i][0]*w);
 							g[i][1]=0;
-						}else if(g[i][1]==3)//res
+							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
+							width(i)=.1588*.2*10;
+						}else if(g[i][1]==3){//res
 							g[i][0]*=r0;
+							length[i]=1;
+							width[i]=.1588*.5*10;
+						}
 				}
 			}
 		}else{//coupled for bp and br
+			if(filter==3){//band reject
+				
+			}else{//band stop
+				
+			}
 		}
 			
 		
