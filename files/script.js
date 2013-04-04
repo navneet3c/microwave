@@ -41,6 +41,16 @@ $(document).ready(function(){
 		order=$('#frequency-form-container input[name=order]').val()
 		if($("#filterSelect").val()>2)
 			bandwidth=$('#frequency-form-container input[name=bandwidth]').val()*Math.pow(10,$('#frequency-form-container select[name=bandwidth-unit]').val())
+		else
+			$("#method-table-append").after("<tr>\
+							<td>Type of design:</td>\
+							<td>\
+								<select size=\"1\" name=\"method\">\
+									<option value=\"1\" selected>Stub Method</option>\
+									<option value=\"2\">Stepped-Impedance Method</option>\
+								</select>\
+							</td>\
+						</tr>");
 		fc=$('#frequency-form-container input[name=fc]').val()*Math.pow(10,$('#frequency-form-container select[name=fc-unit]').val())
 		g=new Array();
 		g[0]=[1,3];//type: 1=cap;0=ind,3=res;
@@ -133,9 +143,15 @@ $(document).ready(function(){
 		//calculate circuit diagram
 		console.log(response+filter);
 		Er=$("#filter-form-container select[name=er]").val();
-		method=$("#filter-form-container select[name=method]").val();
 		line=$("#filter-form-container select[name=line]").val();
-		
+		if(filter<=2){
+			method=$("#filter-form-container select[name=method]").val();
+			if(method==1){//stub for lpf hpf
+			}else{//stepped impedance for lpf hpf
+			}
+		}else{//coupled for bp and br
+		}
+			
 		
 	});
 });
