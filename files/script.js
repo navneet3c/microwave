@@ -76,56 +76,6 @@ $(document).ready(function(){
 				g[i+1]=[1,3];
 			}else g[i]=[1,3]
 		}
-
-		//g values have been calculated, now calculating the capacitor and inductor values
-		var w=2*Math.PI*fc;
-		if(filter==1){//low pass 
-			for(i=g.length-1;i>=0;i--)
-				if(g[i][1]==0)//ind
-					g[i][0]*=r0/w;
-				else if(g[i][1]==1)//cap
-					g[i][0]*=1/(r0*w);
-				else if(g[i][1]==3)//res
-					g[i][0]*=r0;
-		}else if(filter==2){//high pass
-			for(i=g.length-1;i>=0;i--)
-				if(g[i][1]==0){//ind
-					g[i][0]=1/(r0*w*g[i][0]);
-					g[i][1]=1;
-				}else if(g[i][1]==1){//cap
-					g[i][0]=r0/(g[i][0]*w);
-					g[i][1]=0;
-				}else if(g[i][1]==3)//res
-					g[i][0]*=r0;
-		}else if(filter==3){//band pass
-			for(i=g.length-1;i>=0;i--)
-				if(g[i][1]==0){//ind conv to series 2
-					var t=g[i][0];
-					g[i][0]=new Array();
-					g[i][0][0]=[(t*r0)/bandwidth,0];
-					g[i][0][1]=[bandwidth/(w*w*t*r0),1];
-				}else if(g[i][1]==1){//cap conv to parallel 2
-					var t=g[i][0];
-					g[i][0]=new Array();
-					g[i][0][0]=[r0/(t*bandwidth),0];
-					g[i][0][1]=[(t*bandwidth)/(w*w*r0),1];
-				}else if(g[i][1]==3)//res
-					g[i][0]*=r0;
-		}else if(filter==4){//band reject
-			for(i=g.length-1;i>=0;i--)
-				if(g[i][1]==0){//ind conv to series 2
-					var t=g[i][0];
-					g[i][0]=new Array();
-					g[i][0][0]=[(t*r0*bandwidth)/(w*w),0];
-					g[i][0][1]=[1/(bandwidth*t*r0),1];
-				}else if(g[i][1]==1){//cap conv to parallel 2
-					var t=g[i][0];
-					g[i][0]=new Array();
-					g[i][0][0]=[(t*bandwidth)/(r0*w*w),0];
-					g[i][0][1]=[r0/(t*bandwidth),1];
-				}else if(g[i][1]==3)//res
-					g[i][0]*=r0;
-		}
 		
 		//prototype values calculated. draw now
 		var string='<table>';
@@ -147,7 +97,99 @@ $(document).ready(function(){
 		if(filter<=2){
 			method=$("#filter-form-container select[name=method]").val();
 			if(method==1){//stub for lpf hpf
+		/*	
+			for i=1:2:n
+    z(i)=g(i);
+end
+%Every even numbered elements are capacitors and by using Richard's
+%transformation the chara impedance is the inverse of the capacitance value
+for i=2:2:n
+    z(i)=(1/g(i));
+end
+% T-section is used in stub method of filter design.So the first element
+% will be inductor. Inductors and capacitors are replaced by SC and OC
+% stubs of lambda/8 length.Unit element is added to the first inductor
+% and Kuroda's identity is applied
+
+        N=1+(1/z(1));
+        k(1)=N;
+        k(2)=z(1)*N;
+        j=3;
+%In case of filter order of 5 or more
+for i=2:n-1
+    if rem(i,2)==1
+%Each of the 3,5,7---(n-2)th inductor is splitted in to two inductors
+%each of L/2 henries and
+        z_half(j)=z(i)/2;            
+        N=1+(1/z_half(j));
+        k(j)=N*z_half(j);
+        k(j+1)=0.5*N;
+        k(j+2)=k(j);
+        j=j+2;
+        
+    else
+        k(j)=z(i);
+
+    end;
+j=j+1;
+end;
+%Last Inductor-UE combination is converted to Capacitor-UE using Kuroda's
+%identity
+        N=1+(1/z(n));        
+        k(j)=z(n)*N;
+        k(j+1)=N;
+
+       
+%All the impedance values are scaled using 50 ohms
+z=k*50;
+%Wheeler's Curve equations are ued to obtain the width of each of the
+%sections
+for i=1:2*n-1
+A=((z(i)/60)*sqrt((E_eff+1)/2)+(((E_eff-1)/(E_eff+1))*(.23+(.11/E_eff))));
+B=377*pi/(2*z(i)*sqrt(E_eff));
+w1=.1588*10*8*exp(A)/(exp(2*A)-2);
+w2=(.1588*10*2/pi)*(B-1-log(2*B-1)+((E_eff-1)/(2*E_eff))*(log(B-1)+0.39-0.61/E_eff));
+if ((w1<=2*1.588) && (w1>0) && (imag(w1)==0))
+    w(i)=w1;
+elseif ((w2>2*1.588) && (w2>0) && (imag(w2)==0))
+    w(i)=w2;
+end;
+end;
+%length of all of the sections are lambda divided by sqrt(E_eff)
+length=3e11/(cut_freq*8*sqrt(E_eff));
+z_feed=50;
+A=(z_feed/60)*sqrt((E_eff+1)/2)+(((E_eff-1)/(E_eff+1))*(.23+(.11/E_eff)));
+B=377*pi/(2*z_feed)*sqrt(E_eff);
+w1_feed=.1588*10*8*exp(A)/(exp(2*A)-2);
+w2_feed=(.1588*10*2/pi)*(B-1-log(2*B-1)+((E_eff-1)/(2*E_eff))*(log(B-1)+0.39-0.61/E_eff));
+if ((w1_feed<=2*1.588) && (w1_feed>0) && (imag(w1_feed)==0))
+    w_feed=w1_feed;
+elseif ((w2_feed>2*1.588) && (w2_feed>0) && (imag(w2_feed)==0))
+    w_feed=w2_feed;
+end;*/
+			
 			}else{//stepped impedance for lpf hpf
+				//g values have been calculated, now calculating the capacitor and inductor values
+		var w=2*Math.PI*fc;
+		if(filter==1){//low pass 
+			for(i=g.length-1;i>=0;i--)
+				if(g[i][1]==0)//ind
+					g[i][0]*=r0/w;
+				else if(g[i][1]==1)//cap
+					g[i][0]*=1/(r0*w);
+				else if(g[i][1]==3)//res
+					g[i][0]*=r0;
+		}else if(filter==2){//high pass
+			for(i=g.length-1;i>=0;i--)
+				if(g[i][1]==0){//ind
+					g[i][0]=1/(r0*w*g[i][0]);
+					g[i][1]=1;
+				}else if(g[i][1]==1){//cap
+					g[i][0]=r0/(g[i][0]*w);
+					g[i][1]=0;
+				}else if(g[i][1]==3)//res
+					g[i][0]*=r0;
+		}//scaled
 			}
 		}else{//coupled for bp and br
 		}
