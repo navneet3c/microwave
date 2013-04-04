@@ -67,7 +67,7 @@ $(document).ready(function(){
 			}else g[i]=[1,3]
 		}
 		var w=2*Math.PI*fc;
-		if(filter==1)
+		if(filter==1)//low pass 
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0)//ind
 					g[i][0]*=r0/w;
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					g[i][0]*=1/(r0*w);
 				else if(g[i][1]==3)//res
 					g[i][0]*=r0;
-		else if(filter==2)
+		else if(filter==2)//high pass
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0){//ind
 					g[i][0]=1/(r0*w*g[i][0]);
@@ -85,7 +85,7 @@ $(document).ready(function(){
 					g[i][1]=0;
 				}else if(g[i][1]==3)//res
 					g[i][0]*=r0;
-		else if(filter==3){
+		else if(filter==3){//band pass
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0){//ind conv to series 2
 					var t=g[i][0];
@@ -99,7 +99,7 @@ $(document).ready(function(){
 					g[i][0][0]=[(t*bandwidth)/(w*w*r0),1];
 				}else if(g[i][1]==3)//res
 					g[i][0]*=r0;
-		}else if(filter==4){
+		}else if(filter==4){//band reject
 			for(i=g.length-1;i>=0;i--)
 				if(g[i][1]==0){//ind conv to series 2
 					var t=g[i][0];
