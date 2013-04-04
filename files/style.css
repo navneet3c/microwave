@@ -98,9 +98,11 @@ input[type="submit"],button{
 	background-color: #999;
 	border-radius: 30px;
 	box-shadow: 0px 0px 40px 10px #777;
+	height: 85%;
 }
 #lumped-output{
-	
+	max-height: 65%;
+	overflow: auto;
 }
 #method-form-container{
 	padding: 50px;

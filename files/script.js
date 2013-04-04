@@ -14,7 +14,7 @@ $(document).ready(function(){
 			$("#frequency-table-append").after("<tr>\
 							<td>Bandwidth:</td>\
 							<td>\
-								<input type=\"number\" name=\"bandwidth\">\
+								<input type=\"number\" value=\"1\" name=\"bandwidth\">\
 								<select size=\"1\" name=\"bandwidth-unit\" class=\"units\">\
 									<option value=\"0\">Hz</option>\
 									<option value=\"3\">kHz</option>\
@@ -91,12 +91,12 @@ $(document).ready(function(){
 					var t=g[i][0];
 					g[i][0]=new Array();
 					g[i][0][0]=[(t*r0)/bandwidth,0];
-					g[i][0][0]=[bandwidth/(w*w*t*r0),1];
+					g[i][0][1]=[bandwidth/(w*w*t*r0),1];
 				}else if(g[i][1]==1){//cap conv to parallel 2
 					var t=g[i][0];
 					g[i][0]=new Array();
 					g[i][0][0]=[r0/(t*bandwidth),0];
-					g[i][0][0]=[(t*bandwidth)/(w*w*r0),1];
+					g[i][0][1]=[(t*bandwidth)/(w*w*r0),1];
 				}else if(g[i][1]==3)//res
 					g[i][0]*=r0;
 		}else if(filter==4){//band reject
@@ -105,18 +105,26 @@ $(document).ready(function(){
 					var t=g[i][0];
 					g[i][0]=new Array();
 					g[i][0][0]=[(t*r0*bandwidth)/(w*w),0];
-					g[i][0][0]=[1/(bandwidth*t*r0),1];
+					g[i][0][1]=[1/(bandwidth*t*r0),1];
 				}else if(g[i][1]==1){//cap conv to parallel 2
 					var t=g[i][0];
 					g[i][0]=new Array();
 					g[i][0][0]=[(t*bandwidth)/(r0*w*w),0];
-					g[i][0][0]=[r0/(t*bandwidth),1];
+					g[i][0][1]=[r0/(t*bandwidth),1];
 				}else if(g[i][1]==3)//res
 					g[i][0]*=r0;
 		}
 		
 		//prototype values calculated. draw now
-		for(i=0;i<g.length;++i) console.log(g[i])
+		var string='<table>';
+		var com=new Array('Inductor','Capacitor','','Resistor');
+		for(i=0;i<g.length;++i){
+			string+="<tr><td>g "+i+":</td><td>"+(g[i][0].length?(com[g[i][0][0][1]]+": "+g[i][0][0][0]+"<br />"+com[g[i][0][1][1]]+": "+g[i][0][1][0]):(	com[g[i][1]]+": "+g[i][0]))+"</td></tr>";
+		}
+		string+="</table>";
+		$("#lumped-output").html(string);
+		
+		
 	})
 	$("#method-next").click(function(){
 		$("#container3").animate({"left":$("#container5").css("left")});
