@@ -1,12 +1,21 @@
-microwave
-=========
+Microwave filters
+=================
 
-ui done
---todo
-draw circuit from g
+A small javascript app that gives design values for microwave filters. 
 
-l, c corresponding to g0,g1...
-for band pass and band reject, series l and parall c replaced by array of two elements
+Filter design type 
+--chebyshev
+--butterworth
 
-transform to filter required
-design cm strips
+Filter response type
+--low pass
+--high pass
+--band pass
+--band reject
+
+Distributed designs
+--Stub method
+--Stepped impedance method
+--Coupled line method
+
+Project to be host at ece.nitt.edu
