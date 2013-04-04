@@ -52,7 +52,7 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 		fc=$('#frequency-form-container input[name=fc]').val()*Math.pow(10,$('#frequency-form-container select[name=fc-unit]').val())
-		g=new Array();
+		g=new Array(),k=new Array();
 		g[0]=[1,3];//type: 1=cap;0=ind,3=res;
 		if(response==1){//butterworth g
 			for(i=1;i<=order;++i){
@@ -81,7 +81,7 @@ $(document).ready(function(){
 		var string='<table>';
 		var com=new Array('Inductor','Capacitor','','Resistor');
 		for(i=0;i<g.length;++i){
-			string+="<tr><td>g "+i+":</td><td>"+(g[i][0].length?(com[g[i][0][0][1]]+": "+g[i][0][0][0]+"<br />"+com[g[i][0][1][1]]+": "+g[i][0][1][0]):(	com[g[i][1]]+": "+g[i][0]))+"</td></tr>";
+			string+="<tr><td>g "+i+":</td><td>"+(com[g[i][1]]+": "+g[i][0])+"</td></tr>";
 		}
 		string+="</table>";
 		$("#lumped-output").html(string);
@@ -97,76 +97,52 @@ $(document).ready(function(){
 		if(filter<=2){
 			method=$("#filter-form-container select[name=method]").val();
 			if(method==1){//stub for lpf hpf
-		/*	
-			for i=1:2:n
-    z(i)=g(i);
-end
-%Every even numbered elements are capacitors and by using Richard's
-%transformation the chara impedance is the inverse of the capacitance value
-for i=2:2:n
-    z(i)=(1/g(i));
-end
-% T-section is used in stub method of filter design.So the first element
-% will be inductor. Inductors and capacitors are replaced by SC and OC
-% stubs of lambda/8 length.Unit element is added to the first inductor
-% and Kuroda's identity is applied
-
-        N=1+(1/z(1));
-        k(1)=N;
-        k(2)=z(1)*N;
-        j=3;
-%In case of filter order of 5 or more
-for i=2:n-1
-    if rem(i,2)==1
-%Each of the 3,5,7---(n-2)th inductor is splitted in to two inductors
-%each of L/2 henries and
-        z_half(j)=z(i)/2;            
-        N=1+(1/z_half(j));
-        k(j)=N*z_half(j);
-        k(j+1)=0.5*N;
-        k(j+2)=k(j);
-        j=j+2;
-        
-    else
-        k(j)=z(i);
-
-    end;
-j=j+1;
-end;
-%Last Inductor-UE combination is converted to Capacitor-UE using Kuroda's
-%identity
-        N=1+(1/z(n));        
-        k(j)=z(n)*N;
-        k(j+1)=N;
-
-       
-%All the impedance values are scaled using 50 ohms
-z=k*50;
-%Wheeler's Curve equations are ued to obtain the width of each of the
-%sections
-for i=1:2*n-1
-A=((z(i)/60)*sqrt((E_eff+1)/2)+(((E_eff-1)/(E_eff+1))*(.23+(.11/E_eff))));
-B=377*pi/(2*z(i)*sqrt(E_eff));
-w1=.1588*10*8*exp(A)/(exp(2*A)-2);
-w2=(.1588*10*2/pi)*(B-1-log(2*B-1)+((E_eff-1)/(2*E_eff))*(log(B-1)+0.39-0.61/E_eff));
-if ((w1<=2*1.588) && (w1>0) && (imag(w1)==0))
-    w(i)=w1;
-elseif ((w2>2*1.588) && (w2>0) && (imag(w2)==0))
-    w(i)=w2;
-end;
-end;
-%length of all of the sections are lambda divided by sqrt(E_eff)
-length=3e11/(cut_freq*8*sqrt(E_eff));
-z_feed=50;
-A=(z_feed/60)*sqrt((E_eff+1)/2)+(((E_eff-1)/(E_eff+1))*(.23+(.11/E_eff)));
-B=377*pi/(2*z_feed)*sqrt(E_eff);
-w1_feed=.1588*10*8*exp(A)/(exp(2*A)-2);
-w2_feed=(.1588*10*2/pi)*(B-1-log(2*B-1)+((E_eff-1)/(2*E_eff))*(log(B-1)+0.39-0.61/E_eff));
-if ((w1_feed<=2*1.588) && (w1_feed>0) && (imag(w1_feed)==0))
-    w_feed=w1_feed;
-elseif ((w2_feed>2*1.588) && (w2_feed>0) && (imag(w2_feed)==0))
-    w_feed=w2_feed;
-end;*/
+			//k starts from 1, l for lpf, c for hpf
+			for(i=g.length-2;i>0;i--)
+				if(g[i][1]==1)
+					g[i][0]=1/g[i][0];
+			var N=1+(1/g[1][0]),j=3,z_half;
+      k[1]=N;
+      k[2]=g[1][0]*N;
+			
+			for(i=2;i<g.length-1;i++){
+				if(i%2==1){
+					z_half=g[i][0]/2;
+					N=1+(1/z_half);
+					k[j]=N*z_half;
+					k[j+1]=0.5*N;
+					k[j+2]=k[j];
+					j=j+2;
+				}else
+					k[j]=g[i][0];
+				j=j+1;
+			}
+			N=1+(1/g[i][0]);        
+      k[j]=g[i][0]*N;
+      k[j+1]=N;
+			for(i=k.length-1;i>=0;i--)
+				k[i]*=50;
+			var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
+			for(i=1;i<=2*n-1;++i){
+				A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
+				B=377*Math.PI/(2*k[i]*Math.sqrt(Er));
+				w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+				w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(log(B-1)+0.39-0.61/Er));
+				if ((w1<=2*1.588) && (w1>0))
+					z[i]=w1;
+				else if ((w2>2*1.588) && (w2>0))
+					z[i]=w2;
+			}
+			length=3e11/(fc*8*Math.sqrt(Er));
+			z_feed=50;//feed
+			A=(z_feed/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er)));
+			B=377*Math.PI/(2*z_feed)*Math.sqrt(Er);
+			w1_feed=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+			w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+			if ((w1_feed<=2*1.588) && (w1_feed>0))
+				w_feed=w1_feed;
+			elseif ((w2_feed>2*1.588) && (w2_feed>0))
+				w_feed=w2_feed;
 			
 			}else{//stepped impedance for lpf hpf
 				//g values have been calculated, now calculating the capacitor and inductor values
