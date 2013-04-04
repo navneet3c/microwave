@@ -1,4 +1,4 @@
-var response,filter,order,fc,bandwidth,ripple,r0,method,line,g,Er;
+var response,filter,order,fc,bandwidth,ripple,r0,method,line,g,Er,delta;
 $(document).ready(function(){
 	$("#responseSelect").change(function(){
 		if($(this).val()==2)
@@ -12,21 +12,19 @@ $(document).ready(function(){
 	$("#filterSelect").change(function(){
 		if($(this).val()>2)
 			$("#frequency-table-append").after("<tr>\
-							<td>Bandwidth:</td>\
+							<td>Bandwidth in percentage of Central Frequency:</td>\
 							<td>\
-								<input type=\"number\" value=\"1\" name=\"bandwidth\">\
-								<select size=\"1\" name=\"bandwidth-unit\" class=\"units\">\
-									<option value=\"0\">Hz</option>\
-									<option value=\"3\">kHz</option>\
-									<option value=\"6\">MHz</option>\
-									<option value=\"9\" selected>GHz</option>\
-								</select>\
+								<input type=\"number\" value=\"0.1\" name=\"delta\" step=\"0.05\">\
 							</td>\
 						</tr>");
 	});
 	$(".scrollnext").click(function(){
 		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))},'slow');
 		return false;
+	});
+	$("#frequency-submit").click(function(){
+		if($("#filterSelect").val()>2) $("#cut_off_text").html("Center");
+		else  $("#cut_off_text").html("Cutoff");
 	});
 	$("#lumped-next").click(function(){
 		$("#container3").animate({"left":$("#container4").css("left")});
@@ -232,8 +230,68 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				}
 			}
 		}else{//coupled for bp and br
-			if(filter==3){//band reject
+			delta=$("#filter-form-container select[name=delta]").val();
+			if(filter==3){//band pass
+				var ZJ=new Array();
+				//compute even mode and odd mode impedance
+				ZJ[1]=Math.sqrt(Math.PI*delta/(2*g[1][0]));
+				for(i=2;i>=g.length-1;i--){
+					ZJ[i]=Math.PI*delta/(2*Math.sqrt(g(n-1)*g(n)));
+				}
+				var Z_oe = new Array();
+				var Z_oo = new Array();
+				var Z_ose = new Array();
+				var Z_oso = new Array();
+				for (i=1;i<g.length-1;i++){
+					Z_oe[i]=r0*(1+ZJ[i]+(Math.pow(ZJ[i],2)));
+					Z_oo[i]=r0*(1-ZJ[i]+(Math.pow(ZJ[i],2)));
+					Z_ose[i]=Z_oe[i]/2;
+					Z_oso[i]=Z_oo[i]/2;
+				}
+
+				//Implementation of Nomogram Equations to find the WIDTH and SPACING
 				
+				for(i=1;i<g.length;i++){
+					var A=((Z_ose[i]/60)*sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/E_r))));
+					var B=377*Math.PI/(2*Z_ose[i]*Math.sqrt(Er));
+					var w1_hse=8*Math.exp(A)/Math.(exp(2*A)-2);
+					var w2_hse=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+					if ((w1_hse<=2*1.588) && (w1_hse>0))
+				    	w_hse[i]=w1_hse;
+					else if((w2_hse>2*1.588) && (w2_hse>0))
+				    	w_hse[i]=w2_hse;
+				}
+				for(i=1;i<g.length;i++){
+					A=((Z_oso[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
+					B=377*Math.PI/(2*Z_oso(i)*Math.sqrt(E_r));
+					w1_hso=8*Math.exp(A)/(Math.exp(2*A)-2);
+					w2_hso=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+					if ((w1_hso<=2*1.588) && (w1_hso>0))
+				    	w_hso[i]=w1_hso;
+					else if((w2_hso>2*1.588) && (w2_hso>0))
+				    	w_hso(i)=w2_hso;
+				}
+				for(i=1;i<g.length;i++){
+					s_h[i]=(2/Math.PI)*Math.acosh((Math.cosh((Math.PI/2)*w_hse[i])+Math.cosh((Math.PI/2)*w_hso[i])-2)/(Math.cosh((Math.PI/2)*w_hso(i))-cosh((Math.PI/2)*w_hse[i])));
+					w_h[i]=(1/Math.PI)*(Math.acosh(.5*((Math.cosh(Math.PI*.5*s_h[i])-1)+((Math.cosh(Math.PI*.5*s_h[i])+1)*Math.cosh(Math.PI*.5*w_hse[i]))))-(Math.PI*.5*s_h[i]));
+				}
+				
+				% height of substrate of the microstrip design is assumed to be 1/16th of an inch
+				var s=s_h*0.1588*10;
+				var w=w_h*0.1588*10;
+				var length=3e11/(cut_freq*4*Math.sqrt(Er));
+				
+				%WIDTH of feedlines
+				
+				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
+				var B=377*Math.PI/(2*r0*Math.sqrt(Er));
+				var w_feed1=0.1588*10*8*Math.exp(A)/(exp(2*A)-2);
+				var w_feed2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+				if ((w_feed1<=2*1.588) && (w_feed1>0))
+				    w_feed=w_feed1;
+				else if ((w_feed2>2*1.588) && (w_feed2>0))
+				    w_feed=w_feed2;
+
 			}else{//band stop
 				
 			}
