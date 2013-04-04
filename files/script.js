@@ -170,26 +170,38 @@ end;*/
 			
 			}else{//stepped impedance for lpf hpf
 				//g values have been calculated, now calculating the capacitor and inductor values
-		var w=2*Math.PI*fc;
-		if(filter==1){//low pass 
-			for(i=g.length-1;i>=0;i--)
-				if(g[i][1]==0)//ind
-					g[i][0]*=r0/w;
-				else if(g[i][1]==1)//cap
-					g[i][0]*=1/(r0*w);
-				else if(g[i][1]==3)//res
-					g[i][0]*=r0;
-		}else if(filter==2){//high pass
-			for(i=g.length-1;i>=0;i--)
-				if(g[i][1]==0){//ind
-					g[i][0]=1/(r0*w*g[i][0]);
-					g[i][1]=1;
-				}else if(g[i][1]==1){//cap
-					g[i][0]=r0/(g[i][0]*w);
-					g[i][1]=0;
-				}else if(g[i][1]==3)//res
-					g[i][0]*=r0;
-		}//scaled
+				var w=2*Math.PI*fc;
+				if(filter==1){//low pass 
+					lamda_eff=(3*Math.pow(10,8))/(w*Math.sqrt(Er));
+					var length = new Array();
+					var width = new Array();
+					for(i=g.length-1;i>=0;i--){
+						if(g[i][1]==0){//ind take w/h as 
+							g[i][0]*=r0/w;
+							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
+							width(i)=.1588*.2*10;
+						}else if(g[i][1]==1){//cap
+							g[i][0]*=1/(r0*w);
+							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
+							width[i]=.1588*.8*10;
+						}else if(g[i][1]==3){//res
+							g[i][0]*=r0;
+							length[i]=1;
+							width[i]=.1588*.5*10;
+						}
+					}
+					
+				}else if(filter==2){//high pass
+					for(i=g.length-1;i>=0;i--)
+						if(g[i][1]==0){//ind
+							g[i][0]=1/(r0*w*g[i][0]);
+							g[i][1]=1;
+						}else if(g[i][1]==1){//cap
+							g[i][0]=r0/(g[i][0]*w);
+							g[i][1]=0;
+						}else if(g[i][1]==3)//res
+							g[i][0]*=r0;
+				}
 			}
 		}else{//coupled for bp and br
 		}
