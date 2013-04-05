@@ -37,8 +37,10 @@ $(document).ready(function(){
 		filter=$('#filter-form-container select[name=filter]').val()
 		r0=$('#frequency-form-container input[name=r0]').val()
 		order=$('#frequency-form-container input[name=order]').val()
-		if($("#filterSelect").val()>2)
-			bandwidth=$('#frequency-form-container input[name=bandwidth]').val()*Math.pow(10,$('#frequency-form-container select[name=bandwidth-unit]').val())
+		if($("#filterSelect").val()>2){
+			bandwidth=$('#frequency-form-container input[name=delta]').val();
+			bandwidth*=fc;
+		}
 		else
 			$("#method-table-append").after("<tr>\
 							<td>Type of design:</td>\
@@ -103,10 +105,14 @@ $(document).ready(function(){
       k[2]=g[1][0]*N;
 			j=3;
 			}else{
-				for(i=g.length-2;i>0;i--)
-				if(g[i][1]==0)
-					g[i][0]=1/g[i][0];
-				j=2;
+				for(i=g.length-2;i>0;i--){
+				if(g[i][1]==1){
+					g[i][0]=(1/g[i][0]);
+					}
+				}
+					k[1]=N;
+					k[2]=g[1][0]*N;
+					j=3;
 			}
 			for(i=2;i<g.length-2;i++){
 				if(i%2==1){
@@ -175,11 +181,8 @@ if (i%2==1){
     x=x+length-(k[i+1]/2);
     y=y-length;
 }
-console.log(sx,sy,x,y,k[i],length,x*sx)
 }
 context.fillStyle="#bb9944";
-//xlabel('Length in mm','fontsize',12,'fontweight','b');
-//ylabel('Width in mm','fontsize',12,'fontweight','b');
 context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
 context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 			
@@ -188,23 +191,24 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				//g values have been calculated, now calculating the capacitor and inductor values
 				var w=2*Math.PI*fc;
 				if(filter==1){//low pass 
-					lamda_eff=(3*Math.pow(10,8))/(w*Math.sqrt(Er));
+					lamda_eff=(3e8)/(fc*Math.sqrt(Er));
 					var length = new Array();
 					var width = new Array();
 					for(i=g.length-1;i>=0;i--){
-						if(g[i][1]==0){//ind take w/h as 
+						if(g[i][1]==1){//ind take w/h as 
 							g[i][0]*=r0/w;
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
-							width[i]=.1588*.2*10;
-						}else if(g[i][1]==1){//cap
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]/100)/(2*Math.PI);
+							width[i]=0.1588*0.2*10;
+						}else if(g[i][1]==0){//cap
 							g[i][0]*=1/(r0*w);
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
-							width[i]=.1588*.8*10;
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]*20)/(2*Math.PI);
+							width[i]=0.1588*0.8*10;
 						}else if(g[i][1]==3){//res
 							g[i][0]*=r0;
 							length[i]=1;
-							width[i]=.1588*.5*10;
+							width[i]=0.1588*0.5*10;
 						}
+						console.log(lamda_eff,g[i][0],width[i])
 					}
 					
 				}else if(filter==2){//high pass
@@ -215,19 +219,53 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 						if(g[i][1]==0){//cap
 							g[i][0]=1/(r0*w*g[i][0]);
 							g[i][1]=1;
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
-							width[i]=.1588*.8*10;
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]*20)/(2*Math.PI);
+							width[i]=0.1588*.8*10;
 						}else if(g[i][1]==1){//ind
 							g[i][0]=r0/(g[i][0]*w);
 							g[i][1]=0;
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
-							width(i)=.1588*.2*10;
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]/100)/(2*Math.PI);
+							width(i)=0.1588*.2*10;
 						}else if(g[i][1]==3){//res
 							g[i][0]*=r0;
 							length[i]=1;
-							width[i]=.1588*.5*10;
+							width[i]=0.1588*.5*10;
 						}
 				}
+				
+				
+var canvas=document.getElementById("microcanvas");
+	var context = canvas.getContext('2d');
+  canvas.width = $("#micro-output-output").width();
+	canvas.height= 450;
+	context.fillStyle="#FFFFFF";
+  context.fillRect(0,0,canvas.width,canvas.height);
+context.fillStyle="#aa8833";
+x=20;
+y=0.05;
+offset=200
+context.font = "bold 16px sans-serif";
+var sx=canvas.width/(order*35),sy=canvas.height/10;
+i=1;
+context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
+context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+40+offset);
+context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy-40+offset);
+for(i=2;i<=order;i++){
+	x=x+length[i-1];
+	y=y+(width[i-1]/2)-(width[i]/2);
+	context.fillStyle="#aa8833";
+	context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
+	context.fillStyle="#000000";
+	context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+40+offset);
+	context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy-40+offset);
+	console.log(x,y,length[i],width[i])
+}
+context.fillStyle="#bb9944";
+var length_feed_lines=Math.max.apply( Math, length );
+var width_feed_lines=0.4*0.1588*10;
+context.fillRect((20-length_feed_lines)*sx,(0.05+(width[1]/2)-(width_feed_lines/2))*sy+offset,(length_feed_lines)*sx,width_feed_lines*sy);
+context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*sy+offset,length_feed_lines*sx,width_feed_lines*sy);
+				
 			}
 		}else{//coupled for bp and br
 			delta=$("#filter-form-container select[name=delta]").val();
@@ -254,7 +292,7 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				for(i=1;i<g.length;i++){
 					var A=((Z_ose[i]/60)*sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/E_r))));
 					var B=377*Math.PI/(2*Z_ose[i]*Math.sqrt(Er));
-					var w1_hse=8*Math.exp(A)/Math.(exp(2*A)-2);
+					var w1_hse=8*Math.exp(A)/Math.exp((2*A)-2);
 					var w2_hse=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
 					if ((w1_hse<=2*1.588) && (w1_hse>0))
 				    	w_hse[i]=w1_hse;
@@ -275,14 +313,10 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 					s_h[i]=(2/Math.PI)*Math.acosh((Math.cosh((Math.PI/2)*w_hse[i])+Math.cosh((Math.PI/2)*w_hso[i])-2)/(Math.cosh((Math.PI/2)*w_hso(i))-cosh((Math.PI/2)*w_hse[i])));
 					w_h[i]=(1/Math.PI)*(Math.acosh(.5*((Math.cosh(Math.PI*.5*s_h[i])-1)+((Math.cosh(Math.PI*.5*s_h[i])+1)*Math.cosh(Math.PI*.5*w_hse[i]))))-(Math.PI*.5*s_h[i]));
 				}
-				
-				% height of substrate of the microstrip design is assumed to be 1/16th of an inch
 				var s=s_h*0.1588*10;
 				var w=w_h*0.1588*10;
 				var length=3e11/(cut_freq*4*Math.sqrt(Er));
-				
-				%WIDTH of feedlines
-				
+
 				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
 				var B=377*Math.PI/(2*r0*Math.sqrt(Er));
 				var w_feed1=0.1588*10*8*Math.exp(A)/(exp(2*A)-2);
