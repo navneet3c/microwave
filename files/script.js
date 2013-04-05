@@ -37,8 +37,10 @@ $(document).ready(function(){
 		filter=$('#filter-form-container select[name=filter]').val()
 		r0=$('#frequency-form-container input[name=r0]').val()
 		order=$('#frequency-form-container input[name=order]').val()
-		if($("#filterSelect").val()>2)
-			bandwidth=$('#frequency-form-container input[name=bandwidth]').val()*Math.pow(10,$('#frequency-form-container select[name=bandwidth-unit]').val())
+		if($("#filterSelect").val()>2){
+			bandwidth=$('#frequency-form-container input[name=delta]').val();
+			bandwidth*=fc;
+		}
 		else
 			$("#method-table-append").after("<tr>\
 							<td>Type of design:</td>\
@@ -93,118 +95,119 @@ $(document).ready(function(){
 		if(filter<=2){
 			method=$("#method-form-container select[name=method]").val();
 			if(method==1){//stub for lpf hpf
-			//k starts from 1, l for lpf, c for hpf
-			var N=1+(1/g[1][0]),j,z_half;
-			if(filter==1){
-				for(i=g.length-2;i>0;i--){
-				if(g[i][1]==0) { g[i][0]=(1/g[i][0]);}
-				}
-      k[1]=N;
-      k[2]=g[1][0]*N;
-			j=3;
-			}else{
-				for(i=g.length-2;i>0;i--)
-				if(g[i][1]==0)
-					g[i][0]=1/g[i][0];
-				j=2;
-			}
-			for(i=2;i<g.length-2;i++){
-				if(i%2==1){
-					z_half=g[i][0]/2;
-					N=1+(1/z_half);
-					k[j]=N*z_half;
-					k[j+1]=0.5*N;
-					k[j+2]=k[j];
-					j=j+2;
-				}else
-					k[j]=g[i][0];
-				j=j+1;
-			}
-			N=1+(1/g[i][0]);        
-      k[j]=g[i][0]*N;
-      k[j+1]=N;
-			
-			for(i=k.length-1;i>=0;i--)
-				k[i]*=50;
-			var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
-			for(i=1;i<=2*order-1;++i){
-				A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
-				B=377*Math.PI/(2*k[i]*Math.sqrt(Er));
-				w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
-				w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
-				if ((w1<=2*1.588) && (w1>0))
-					k[i]=w1;
-				else if ((w2>2*1.588) && (w2>0))
-					k[i]=w2;
-			}
-			length=3e11/(fc*8*Math.sqrt(Er));
-			z_feed=50;//feed
-			A=(z_feed/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er)));
-			B=377*Math.PI/(2*z_feed)*Math.sqrt(Er);
-			w1_feed=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
-			w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
-			if ((w1_feed<=2*1.588) && (w1_feed>0))
-				w_feed=w1_feed;
-			else if ((w2_feed>2*1.588) && (w2_feed>0))
-				w_feed=w2_feed;
-			
-			//drawing canvas
-			var canvas=document.getElementById("microcanvas");
-			var context = canvas.getContext('2d');
-  			canvas.width = $("#micro-output-output").width();
-			canvas.height= 450;
-			context.fillStyle="#FFFFFF";
-  			context.fillRect(0,0,canvas.width,canvas.height);
-			context.fillStyle="#aa8833";
-			x=20;
-			y=1.8;
-			context.font = "bold 16px sans-serif";
-			var sx=canvas.width/(order*25),sy=canvas.height/30;
-			for(i=1;i<=(2*order)-1;i++){
-				if (i%2==1){
-					context.fillStyle="#aa8833";
-					context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
-					context.fillStyle="#000000";
-					context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-					x=x+k[i]/2;
-					y=y+length;
+				//k starts from 1, l for lpf, c for hpf
+				var N=1+(1/g[1][0]),j,z_half;
+				if(filter==1){
+					for(i=g.length-2;i>0;i--){
+					if(g[i][1]==0) { g[i][0]=(1/g[i][0]);}
+					}
+				k[1]=N;
+				k[2]=g[1][0]*N;
+				j=3;
 				}else{
-					context.fillStyle="#aa8833";
-    				context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
-					context.fillStyle="#000000";
-					context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-    				x=x+length-(k[i+1]/2);
-    				y=y-length;
+					for(i=g.length-2;i>0;i--){
+					if(g[i][1]==1){
+						g[i][0]=(1/g[i][0]);
+						}
+					}
+						k[1]=N;
+						k[2]=g[1][0]*N;
+						j=3;
 				}
-				console.log(sx,sy,x,y,k[i],length,x*sx)
-			}
-			context.fillStyle="#bb9944";
-			//xlabel('Length in mm','fontsize',12,'fontweight','b');
-			//ylabel('Width in mm','fontsize',12,'fontweight','b');
-			context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
-			context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
-			
-			
+				for(i=2;i<g.length-2;i++){
+					if(i%2==1){
+						z_half=g[i][0]/2;
+						N=1+(1/z_half);
+						k[j]=N*z_half;
+						k[j+1]=0.5*N;
+						k[j+2]=k[j];
+						j=j+2;
+					}else
+						k[j]=g[i][0];
+					j=j+1;
+				}
+				N=1+(1/g[i][0]);        
+				k[j]=g[i][0]*N;
+				k[j+1]=N;
+				
+				for(i=k.length-1;i>=0;i--)
+					k[i]*=50;
+				var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
+				for(i=1;i<=2*order-1;++i){
+					A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
+					B=377*Math.PI/(2*k[i]*Math.sqrt(Er));
+					w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+					w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+					if ((w1<=2*1.588) && (w1>0))
+						k[i]=w1;
+					else if ((w2>2*1.588) && (w2>0))
+						k[i]=w2;
+				}
+				length=3e11/(fc*8*Math.sqrt(Er));
+				z_feed=50;//feed
+				A=(z_feed/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er)));
+				B=377*Math.PI/(2*z_feed)*Math.sqrt(Er);
+				w1_feed=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+				w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+				if ((w1_feed<=2*1.588) && (w1_feed>0))
+					w_feed=w1_feed;
+				else if ((w2_feed>2*1.588) && (w2_feed>0))
+					w_feed=w2_feed;
+				
+				//drawing canvas
+				
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+	  			canvas.width = $("#micro-output-output").width();
+				canvas.height= 450;
+				context.fillStyle="#FFFFFF";
+	  			context.fillRect(0,0,canvas.width,canvas.height);
+				context.fillStyle="#aa8833";
+				x=20;
+				y=1.8;
+				context.font = "bold 16px sans-serif";
+				var sx=canvas.width/(order*25),sy=canvas.height/30;
+				for(i=1;i<=(2*order)-1;i++){
+					if (i%2==1){
+						context.fillStyle="#aa8833";
+						context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
+						context.fillStyle="#000000";
+						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+						x=x+k[i]/2;
+						y=y+length;
+					}else{
+						context.fillStyle="#aa8833";
+					    context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
+							context.fillStyle="#000000";
+							context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+					    x=x+length-(k[i+1]/2);
+					    y=y-length;
+					}
+				}
+				context.fillStyle="#bb9944";
+				context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+				context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+				
 			}else{//stepped impedance for lpf hpf
 				//g values have been calculated, now calculating the capacitor and inductor values
 				var w=2*Math.PI*fc;
 				if(filter==1){//low pass 
-					lamda_eff=(3*Math.pow(10,8))/(w*Math.sqrt(Er));
+					lamda_eff=(3e8)/(fc*Math.sqrt(Er));
 					var length = new Array();
 					var width = new Array();
 					for(i=g.length-1;i>=0;i--){
-						if(g[i][1]==0){//ind take w/h as 
+						if(g[i][1]==1){//ind take w/h as 
 							g[i][0]*=r0/w;
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
-							width[i]=.1588*.2*10;
-						}else if(g[i][1]==1){//cap
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]/100)/(2*Math.PI);
+							width[i]=0.1588*0.2*10;
+						}else if(g[i][1]==0){//cap
 							g[i][0]*=1/(r0*w);
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
-							width[i]=.1588*.8*10;
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]*20)/(2*Math.PI);
+							width[i]=0.1588*0.8*10;
 						}else if(g[i][1]==3){//res
 							g[i][0]*=r0;
 							length[i]=1;
-							width[i]=.1588*.5*10;
+							width[i]=0.1588*0.5*10;
 						}
 					}
 					
@@ -216,19 +219,58 @@ $(document).ready(function(){
 						if(g[i][1]==0){//cap
 							g[i][0]=1/(r0*w*g[i][0]);
 							g[i][1]=1;
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]*20)/(2*Math.PI);
-							width[i]=.1588*.8*10;
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]*20)/(2*Math.PI);
+							width[i]=0.1588*.8*10;
 						}else if(g[i][1]==1){//ind
 							g[i][0]=r0/(g[i][0]*w);
 							g[i][1]=0;
-							length[i]=1000*lamda_eff*Math.asin(2*Math.PI*w*g[i][0]/100)/(2*Math.PI);
-							width(i)=.1588*.2*10;
+							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]/100)/(2*Math.PI);
+							width[i]=0.1588*.2*10;
 						}else if(g[i][1]==3){//res
 							g[i][0]*=r0;
 							length[i]=1;
-							width[i]=.1588*.5*10;
+							width[i]=0.1588*.5*10;
+						}
+						for(i=g.length-1;i>=0;i--){
+							length[i]*=10
+							width[i]*=3
 						}
 				}
+				
+				
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+				canvas.width = $("#micro-output-output").width();
+				canvas.height= 450;
+				context.fillStyle="#FFFFFF";
+				context.fillRect(0,0,canvas.width,canvas.height);
+				x=20;
+				y=0.05;
+				offset=200
+				context.font = "bold 16px sans-serif";
+				var sx=canvas.width/(order*35),sy=canvas.height/10;
+				i=1;
+				context.fillStyle="#aa8833";
+				context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
+				context.fillStyle="#000000";
+				context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+80+offset);
+				context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
+				for(i=2;i<=order;i++){
+					x=x+length[i-1];
+					y=y+(width[i-1]/2)-(width[i]/2);
+					context.fillStyle="#aa8833";
+					context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
+					context.fillStyle="#000000";
+					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx,y*sy+60+offset);
+					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
+					console.log(x,y,length[i],width[i])
+				}
+				context.fillStyle="#996611";
+				var length_feed_lines=Math.max.apply( Math, length );
+				var width_feed_lines=0.4*0.1588*10;
+				context.fillRect((20-length_feed_lines)*sx,(0.05+(width[1]/2)-(width_feed_lines/2))*sy+offset,(length_feed_lines)*sx,width_feed_lines*sy);
+				context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*sy+offset,length_feed_lines*sx,width_feed_lines*sy);
+								
 			}
 		}else{//coupled for bp and br
 			delta=$("#filter-form-container select[name=delta]").val();
@@ -276,6 +318,13 @@ $(document).ready(function(){
 					s_h[i]=(2/Math.PI)*Math.acosh((Math.cosh((Math.PI/2)*w_hse[i])+Math.cosh((Math.PI/2)*w_hso[i])-2)/(Math.cosh((Math.PI/2)*w_hso[i])-cosh((Math.PI/2)*w_hse[i])));
 					w_h[i]=(1/Math.PI)*(Math.acosh(.5*((Math.cosh(Math.PI*.5*s_h[i])-1)+((Math.cosh(Math.PI*.5*s_h[i])+1)*Math.cosh(Math.PI*.5*w_hse[i]))))-(Math.PI*.5*s_h[i]));
 				}
+
+				var s=s_h*0.1588*10;
+				var w=w_h*0.1588*10;
+				var length=3e11/(cut_freq*4*Math.sqrt(Er));
+
+				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
+
 				
 				//height of substrate of the microstrip design is assumed to be 1/16th of an inch
 				var s=new Array();
