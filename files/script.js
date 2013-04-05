@@ -1,6 +1,7 @@
 var response,filter,order,fc,bandwidth,ripple,r0,method,line,g,Er,delta;
 $(document).ready(function(){
-	$("#responseSelect").change(function(){
+	$("#responseSelect").change(function(event){
+		event.preventDefault();
 		if($(this).val()==2)
 			$("#frequency-table-append").after("<tr>\
 							<td>Passband ripple (dB) :</td>\
@@ -9,7 +10,8 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 	});
-	$("#filterSelect").change(function(){
+	$("#filterSelect").change(function(event){
+		event.preventDefault();
 		if($(this).val()>2)
 			$("#frequency-table-append").after("<tr>\
 							<td>Bandwidth in percentage of Central Frequency:</td>\
@@ -18,21 +20,25 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 	});
-	$(".scrollnext").click(function(){
+	$(".scrollnext").click(function(event){
+		event.preventDefault();
 		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))}, 'slow');
 		return false;
 	});
-	$("#frequency-submit").click(function(){
+	$("#frequency-submit").click(function(event){
+		event.preventDefault();
 		if($("#filterSelect").val()>2) $("#cut_off_text").html("Center");
 		else  $("#cut_off_text").html("Cutoff");
 	});
-	$("#lumped-next").click(function(){
+	$("#lumped-next").click(function(event){
+		event.preventDefault();
 		$("#container3").animate({"left":$("#container4").css("left")});
 		$("#lumped-next-container").fadeOut();
 	});
 	
-	$("#calculate-lumped").click(function(){
-	//get values
+	$("#calculate-lumped").click(function(event){
+		event.preventDefault();
+		//get values
 		response=$('#filter-form-container select[name=response]').val()//chebyshev r butterworth
 		filter=$('#filter-form-container select[name=filter]').val()
 		r0=$('#frequency-form-container input[name=r0]').val()
@@ -88,7 +94,8 @@ $(document).ready(function(){
 		
 		
 	})
-	$("#method-next").click(function(){
+	$("#method-next").click(function(event){
+		event.preventDefault();
 		$("#container3").animate({"left":$("#container5").css("left")});
 		//calculate circuit diagram
 		Er=parseInt($("#method-form-container input[name=er]").val());
