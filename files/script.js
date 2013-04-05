@@ -49,7 +49,7 @@ $(document).ready(function(){
 								</select>\
 							</td>\
 						</tr>");
-		fc=$('#frequency-form-container input[name=fc]').val()*Math.pow(10,$('#frequency-form-container select[name=fc-unit]').val())
+		fc=$('#frequency-form-container input[name=fc]').val()*Math.pow(10,$('#frequency-form-container select[name=fc-unit]').val());
 		g=new Array(),k=new Array();
 		g[0]=[1,3];//type: 0=cap;1=ind,3=res;
 		if(response==1){//butterworth g
@@ -148,40 +148,41 @@ $(document).ready(function(){
 			else if ((w2_feed>2*1.588) && (w2_feed>0))
 				w_feed=w2_feed;
 			
-	var canvas=document.getElementById("microcanvas");
-	var context = canvas.getContext('2d');
-  canvas.width = $("#micro-output-output").width();
-	canvas.height= 450;
-	context.fillStyle="#FFFFFF";
-  context.fillRect(0,0,canvas.width,canvas.height);
-context.fillStyle="#aa8833";
-x=20;
-y=1.8;
-context.font = "bold 16px sans-serif";
-var sx=canvas.width/(order*25),sy=canvas.height/30;
-for(i=1;i<=(2*order)-1;i++){
-if (i%2==1){
-	context.fillStyle="#aa8833";
-	context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
-	context.fillStyle="#000000";
-	context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-	x=x+k[i]/2;
-	y=y+length;
-}else{
-	context.fillStyle="#aa8833";
-    context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
-		context.fillStyle="#000000";
-		context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-    x=x+length-(k[i+1]/2);
-    y=y-length;
-}
-console.log(sx,sy,x,y,k[i],length,x*sx)
-}
-context.fillStyle="#bb9944";
-//xlabel('Length in mm','fontsize',12,'fontweight','b');
-//ylabel('Width in mm','fontsize',12,'fontweight','b');
-context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
-context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+			//drawing canvas
+			var canvas=document.getElementById("microcanvas");
+			var context = canvas.getContext('2d');
+  			canvas.width = $("#micro-output-output").width();
+			canvas.height= 450;
+			context.fillStyle="#FFFFFF";
+  			context.fillRect(0,0,canvas.width,canvas.height);
+			context.fillStyle="#aa8833";
+			x=20;
+			y=1.8;
+			context.font = "bold 16px sans-serif";
+			var sx=canvas.width/(order*25),sy=canvas.height/30;
+			for(i=1;i<=(2*order)-1;i++){
+				if (i%2==1){
+					context.fillStyle="#aa8833";
+					context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
+					context.fillStyle="#000000";
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+					x=x+k[i]/2;
+					y=y+length;
+				}else{
+					context.fillStyle="#aa8833";
+    				context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
+					context.fillStyle="#000000";
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+    				x=x+length-(k[i+1]/2);
+    				y=y-length;
+				}
+				console.log(sx,sy,x,y,k[i],length,x*sx)
+			}
+			context.fillStyle="#bb9944";
+			//xlabel('Length in mm','fontsize',12,'fontweight','b');
+			//ylabel('Width in mm','fontsize',12,'fontweight','b');
+			context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+			context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 			
 			
 			}else{//stepped impedance for lpf hpf
@@ -235,8 +236,8 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				var ZJ=new Array();
 				//compute even mode and odd mode impedance
 				ZJ[1]=Math.sqrt(Math.PI*delta/(2*g[1][0]));
-				for(i=2;i>=g.length-1;i--){
-					ZJ[i]=Math.PI*delta/(2*Math.sqrt(g(n-1)*g(n)));
+				for(i=2;i>=g.length-1;i++){
+					ZJ[i]=Math.PI*delta/(2*Math.sqrt(g[i-1][0]*g[i][0]));
 				}
 				var Z_oe = new Array();
 				var Z_oo = new Array();
@@ -251,8 +252,8 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 
 				//Implementation of Nomogram Equations to find the WIDTH and SPACING
 				
-				for(i=1;i<g.length;i++){
-					var A=((Z_ose[i]/60)*sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/E_r))));
+				for(i=1;i<g.length-1;i++){
+					var A=((Z_ose[i]/60)*sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/E_r))));
 					var B=377*Math.PI/(2*Z_ose[i]*Math.sqrt(Er));
 					var w1_hse=8*Math.exp(A)/Math.(exp(2*A)-2);
 					var w2_hse=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
@@ -261,29 +262,33 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 					else if((w2_hse>2*1.588) && (w2_hse>0))
 				    	w_hse[i]=w2_hse;
 				}
-				for(i=1;i<g.length;i++){
-					A=((Z_oso[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
-					B=377*Math.PI/(2*Z_oso(i)*Math.sqrt(E_r));
-					w1_hso=8*Math.exp(A)/(Math.exp(2*A)-2);
-					w2_hso=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+				for(i=1;i<g.length-1;i++){
+					var A=((Z_oso[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
+					var B=377*Math.PI/(2*Z_oso(i)*Math.sqrt(E_r));
+					var w1_hso=8*Math.exp(A)/(Math.exp(2*A)-2);
+					var w2_hso=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
 					if ((w1_hso<=2*1.588) && (w1_hso>0))
 				    	w_hso[i]=w1_hso;
 					else if((w2_hso>2*1.588) && (w2_hso>0))
 				    	w_hso(i)=w2_hso;
 				}
 				for(i=1;i<g.length;i++){
-					s_h[i]=(2/Math.PI)*Math.acosh((Math.cosh((Math.PI/2)*w_hse[i])+Math.cosh((Math.PI/2)*w_hso[i])-2)/(Math.cosh((Math.PI/2)*w_hso(i))-cosh((Math.PI/2)*w_hse[i])));
+					s_h[i]=(2/Math.PI)*Math.acosh((Math.cosh((Math.PI/2)*w_hse[i])+Math.cosh((Math.PI/2)*w_hso[i])-2)/(Math.cosh((Math.PI/2)*w_hso[i])-cosh((Math.PI/2)*w_hse[i])));
 					w_h[i]=(1/Math.PI)*(Math.acosh(.5*((Math.cosh(Math.PI*.5*s_h[i])-1)+((Math.cosh(Math.PI*.5*s_h[i])+1)*Math.cosh(Math.PI*.5*w_hse[i]))))-(Math.PI*.5*s_h[i]));
 				}
 				
 				//height of substrate of the microstrip design is assumed to be 1/16th of an inch
-				var s=s_h*0.1588*10;
-				var w=w_h*0.1588*10;
-				var length=3e11/(cut_freq*4*Math.sqrt(Er));
+				var s=new Array();
+				var w=new Array();
+				for(i=1;i<g.length;i++){
+					s[i]=s_h[i]*0.1588*10;
+					w[i]=w_h[i]*0.1588*10;
+				}
+				var length=(3*Math.pow(10,11))/(fc*4*Math.sqrt(Er));
 				
 				//WIDTH of feedlines
 				
-				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
+				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
 				var B=377*Math.PI/(2*r0*Math.sqrt(Er));
 				var w_feed1=0.1588*10*8*Math.exp(A)/(exp(2*A)-2);
 				var w_feed2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
@@ -291,7 +296,43 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				    w_feed=w_feed1;
 				else if ((w_feed2>2*1.588) && (w_feed2>0))
 				    w_feed=w_feed2;
-
+				
+				//drawing canvas
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+  				canvas.width = $("#micro-output-output").width();
+				canvas.height= 450;
+				context.fillStyle="#FFFFFF";
+  				context.fillRect(0,0,canvas.width,canvas.height);
+				context.fillStyle="#aa8833";
+				x=20;
+				y=1.8;
+				context.font = "bold 16px sans-serif";
+				var sx=canvas.width/(order*25),sy=canvas.height/30;
+				for(i=1;i<=(2*order)-1;i++){
+					if (i%2==1){
+						context.fillStyle="#aa8833";
+						context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
+						context.fillStyle="#000000";
+						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+						x=x+k[i]/2;
+						y=y+length;
+					}else{
+						context.fillStyle="#aa8833";
+	    				context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
+						context.fillStyle="#000000";
+						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+	    				x=x+length-(k[i+1]/2);
+	    				y=y-length;
+					}
+					console.log(sx,sy,x,y,k[i],length,x*sx)
+				}
+				context.fillStyle="#bb9944";
+				//xlabel('Length in mm','fontsize',12,'fontweight','b');
+				//ylabel('Width in mm','fontsize',12,'fontweight','b');
+				context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+				context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+			
 			}else{//band stop
 				
 			}
