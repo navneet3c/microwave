@@ -1,9 +1,10 @@
 body{
 	overflow: hidden;
-	background: #eee url(../images/noise.png);
-	color: #fefefe;
 	font-family: Segoe UI,sans-serif;
-	font-size: 20px;
+	font-size: 16px;
+	letter-spacing: -0.02em;
+	color: #eeeeee;
+	line-height: 1.2em;
 }
 #top-container{
 	left: 0%;
@@ -64,13 +65,10 @@ input[type="submit"],button{
 	border-radius: 3px;
 }
 #filter-form-container{
-	padding: 50px;
+	background: rgba(0, 0, 0, 0.2);
 	margin: 0px auto;
 	width: 40%;
 	margin-top: 8%;
-	background-color: #999;
-	border-radius: 30px;
-	box-shadow: 0px 0px 40px 10px #777;
 }
 #filter-form-container table{
 	margin: 0px auto;
@@ -80,9 +78,7 @@ input[type="submit"],button{
 	margin: 0px auto;
 	width: 50%;
 	margin-top: 6%;
-	background-color: #999;
-	border-radius: 30px;
-	box-shadow: 0px 0px 40px 10px #777;
+	background: rgba(0, 0, 0, 0.2);
 }
 #frequency-form-container table,#method-form-container table,#micro-output-output table{
 	margin: 0px auto;
@@ -95,10 +91,8 @@ input[type="submit"],button{
 	padding-top: 10px;
 	width: 44%;
 	margin-top: 3%;
-	background-color: #999;
-	border-radius: 30px;
-	box-shadow: 0px 0px 40px 10px #777;
 	height: 85%;
+	background: rgba(0, 0, 0, 0.2);
 }
 #lumped-output{
 	max-height: 65%;
@@ -111,9 +105,7 @@ input[type="submit"],button{
 	width: 42%;
 	margin-top: 3%;
 	margin-left: 48%;
-	background-color: #999;
-	border-radius: 30px;
-	box-shadow: 0px 0px 40px 10px #777;
+	background: rgba(0, 0, 0, 0.2);
 }
 #micro-output-output{
 	padding: 50px;
@@ -122,7 +114,36 @@ input[type="submit"],button{
 	width: 46%;
 	margin-top: 3%;
 	margin-left: 47%;
-	background-color: #999;
-	border-radius: 30px;
-	box-shadow: 0px 0px 40px 10px #777;
+	background: rgba(0, 0, 0, 0.2);
 }
+
+h2{
+	text-align: center;
+	margin: 20px 0 20px 0;
+	color: #eeeeee;
+	font-family: "League Gothic", Impact, sans-serif;
+	line-height: 0.9em;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+}
+
+#background{
+	position: fixed;
+	z-index:-100;
+	width: 100%;
+	height: 100%;
+	-webkit-transition: background 800ms ease;
+	-moz-transition: background 800ms ease;
+	-ms-transition: background 800ms ease;
+	-o-transition: background 800ms ease;
+	transition: background 800ms ease;
+	background: -moz-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, #555a5f), color-stop(100%, #1c1e20));
+	background: -webkit-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+	background: -o-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+	background: -ms-radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+	background: radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
+	background-color: #2b2b2b;
+}
+

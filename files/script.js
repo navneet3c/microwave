@@ -19,7 +19,7 @@ $(document).ready(function(){
 						</tr>");
 	});
 	$(".scrollnext").click(function(){
-		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))},'slow');
+		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))}, 'slow');
 		return false;
 	});
 	$("#frequency-submit").click(function(){
@@ -255,7 +255,7 @@ $(document).ready(function(){
 				for(i=1;i<g.length-1;i++){
 					var A=((Z_ose[i]/60)*sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/E_r))));
 					var B=377*Math.PI/(2*Z_ose[i]*Math.sqrt(Er));
-					var w1_hse=8*Math.exp(A)/Math.(exp(2*A)-2);
+					var w1_hse=8*Math.exp(A)/(Math.exp(2*A)-2);
 					var w2_hse=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
 					if ((w1_hse<=2*1.588) && (w1_hse>0))
 				    	w_hse[i]=w1_hse;
@@ -285,7 +285,8 @@ $(document).ready(function(){
 					w[i]=w_h[i]*0.1588*10;
 				}
 				var length=(3*Math.pow(10,11))/(fc*4*Math.sqrt(Er));
-				
+				console.log(s);
+				console.log(w);
 				//WIDTH of feedlines
 				
 				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
@@ -308,9 +309,9 @@ $(document).ready(function(){
 				x=20;
 				y=1.8;
 				context.font = "bold 16px sans-serif";
-				var sx=canvas.width/(order*25),sy=canvas.height/30;
+				//var sx=canvas.width/(order*25),sy=canvas.height/30;
 				for(i=1;i<=(2*order)-1;i++){
-					if (i%2==1){
+					/*if (i%2==1){
 						context.fillStyle="#aa8833";
 						context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
 						context.fillStyle="#000000";
@@ -324,14 +325,14 @@ $(document).ready(function(){
 						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
 	    				x=x+length-(k[i+1]/2);
 	    				y=y-length;
-					}
-					console.log(sx,sy,x,y,k[i],length,x*sx)
+					}*/
+					//console.log(sx,sy,x,y,k[i],length,x*sx)
 				}
 				context.fillStyle="#bb9944";
 				//xlabel('Length in mm','fontsize',12,'fontweight','b');
 				//ylabel('Width in mm','fontsize',12,'fontweight','b');
-				context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
-				context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+				//context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+				//context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 			
 			}else{//band stop
 				
