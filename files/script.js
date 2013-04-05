@@ -216,7 +216,7 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				}
 				console.log(sx,sy,x,y,k[i],length,x*sx)
 			}
-			context.fillStyle="#bb9944";
+			context.fillStyle="#996611";
 			//xlabel('Length in mm','fontsize',12,'fontweight','b');
 			//ylabel('Width in mm','fontsize',12,'fontweight','b');
 			context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
@@ -244,7 +244,6 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 							length[i]=1;
 							width[i]=0.1588*0.5*10;
 						}
-						console.log(lamda_eff,g[i][0],width[i])
 					}
 					
 				}else if(filter==2){//high pass
@@ -261,11 +260,15 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 							g[i][0]=r0/(g[i][0]*w);
 							g[i][1]=0;
 							length[i]=1000*lamda_eff*Math.asin(w*g[i][0]/100)/(2*Math.PI);
-							width(i)=0.1588*.2*10;
+							width[i]=0.1588*.2*10;
 						}else if(g[i][1]==3){//res
 							g[i][0]*=r0;
 							length[i]=1;
 							width[i]=0.1588*.5*10;
+						}
+						for(i=g.length-1;i>=0;i--){
+							length[i]*=10
+							width[i]*=3
 						}
 				}
 				
@@ -276,27 +279,28 @@ var canvas=document.getElementById("microcanvas");
 	canvas.height= 450;
 	context.fillStyle="#FFFFFF";
   context.fillRect(0,0,canvas.width,canvas.height);
-context.fillStyle="#aa8833";
 x=20;
 y=0.05;
 offset=200
 context.font = "bold 16px sans-serif";
 var sx=canvas.width/(order*35),sy=canvas.height/10;
 i=1;
+context.fillStyle="#aa8833";
 context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
-context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+40+offset);
-context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy-40+offset);
+context.fillStyle="#000000";
+context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+80+offset);
+context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
 for(i=2;i<=order;i++){
 	x=x+length[i-1];
 	y=y+(width[i-1]/2)-(width[i]/2);
 	context.fillStyle="#aa8833";
 	context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
 	context.fillStyle="#000000";
-	context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+40+offset);
-	context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy-40+offset);
+	context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx,y*sy+60+offset);
+	context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
 	console.log(x,y,length[i],width[i])
 }
-context.fillStyle="#bb9944";
+context.fillStyle="#996611";
 var length_feed_lines=Math.max.apply( Math, length );
 var width_feed_lines=0.4*0.1588*10;
 context.fillRect((20-length_feed_lines)*sx,(0.05+(width[1]/2)-(width_feed_lines/2))*sy+offset,(length_feed_lines)*sx,width_feed_lines*sy);
