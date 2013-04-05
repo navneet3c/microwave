@@ -1,4 +1,4 @@
-var response,filter,order,fc,bandwidth,ripple,r0,method,line,g,Er;
+var response,filter,order,fc,bandwidth,ripple,r0,method,line,g,Er,delta;
 $(document).ready(function(){
 	$("#responseSelect").change(function(){
 		if($(this).val()==2)
@@ -12,21 +12,19 @@ $(document).ready(function(){
 	$("#filterSelect").change(function(){
 		if($(this).val()>2)
 			$("#frequency-table-append").after("<tr>\
-							<td>Bandwidth:</td>\
+							<td>Bandwidth in percentage of Central Frequency:</td>\
 							<td>\
-								<input type=\"number\" value=\"1\" name=\"bandwidth\">\
-								<select size=\"1\" name=\"bandwidth-unit\" class=\"units\">\
-									<option value=\"0\">Hz</option>\
-									<option value=\"3\">kHz</option>\
-									<option value=\"6\">MHz</option>\
-									<option value=\"9\" selected>GHz</option>\
-								</select>\
+								<input type=\"number\" value=\"0.1\" name=\"delta\" step=\"0.05\">\
 							</td>\
 						</tr>");
 	});
 	$(".scrollnext").click(function(){
 		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))},'slow');
 		return false;
+	});
+	$("#frequency-submit").click(function(){
+		if($("#filterSelect").val()>2) $("#cut_off_text").html("Center");
+		else  $("#cut_off_text").html("Cutoff");
 	});
 	$("#lumped-next").click(function(){
 		$("#container3").animate({"left":$("#container4").css("left")});
@@ -214,8 +212,11 @@ end;*/
 				}
 			}
 		}else{//coupled for bp and br
-			if(filter==3){//band reject
-				
+			delta=$("#filter-form-container select[name=delta]").val();
+			if(filter==3){//band pass
+				ZJ=new Array();
+				//compute even mode and odd mode impedance
+				ZJ[1]=sqrt(pi*delta/(2*g[1][0]));
 			}else{//band stop
 				
 			}

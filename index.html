@@ -42,7 +42,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td>
-								<input type="submit" value="Next" name="next" class="scrollnext">
+								<input type="submit" value="Next" name="next" id="frequency-submit" class="scrollnext">
 							</td>
 						</tr>
 						</tbody>
@@ -67,7 +67,7 @@
 							<td><input type="number" min="3" value="3" name="order"></td>
 						</tr>
 						<tr id="frequency-table-append">
-							<td>Cutoff Frequency:</td>
+							<td><span id="cut_off_text">Cutoff</span> Frequency:</td>
 							<td>
 								<input type="number" name="fc" value="1">
 								<select size="1" name="fc-unit" class="units">
