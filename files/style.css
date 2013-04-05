@@ -1,6 +1,6 @@
 body{
 	overflow: hidden;
-	font-family: Segoe UI,sans-serif;
+	font-family: "Segoe UI",sans-serif;
 	font-size: 16px;
 	letter-spacing: -0.02em;
 	color: #eeeeee;
@@ -11,11 +11,11 @@ body{
     src: url(./Pacifico.ttf) format("truetype");
 }
 #header{
+	color: #AAFF00;
 	font-family:"Pacifico";
 	font-size: 2em;
 	top: 10px;
-	text-align:center;
-	width:100%;
+	left: 200px;
 	margin: 10px 0;
 	padding: 10px;
 	position: absolute;
@@ -51,36 +51,61 @@ table{
 	text-align: left !important;
 }
 table td{
-	padding: 10px;
+	padding: 6px;
 }
 input[type="text"],input[type="number"],select{
-	padding: 8px;
-	font-size: 18px;
-	border: 1px solid #000;
-	font-family: segoe UI;
-	min-width: 250px;
-	border-radius: 5px;
+	background-color:#272828;
+	border:1px solid #181818;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	box-shadow: 0 1px 2px rgba(255,255,255,.1), inset 0 1px 2px rgba(0,0,0,.4);
+	-moz-box-shadow: 0 1px 2px rgba(255,255,255,.1), inset 0 1px 2px rgba(0,0,0,.4);
+	-webkit-box-shadow: 0 1px 2px rgba(255,255,255,.1), inset 0 1px 2px rgba(0,0,0,.4);
+	color:#686868;
+	font-family:Helvetica, Arial, sans-serif;
+	height:35px;
+	margin:10px 3px;
+	text-indent:7px;
+	text-shadow:0 1px 0 #000;
+	width:255px;
+}
+input[type="text"],input[type="number"],select:focus{
+	outline:none;
+	background-color:#272828;
+	color:#888888;
+	text-shadow:none;
+	-webkit-box-shadow: 0 0 5px #AAFF00, inset 0 1px 1px #000;
+	-webkit-transition:background-color .5s ease-in;
+	-moz-transition:color 2s ease-in;
+	-o-transition:color .3s ease-in;
+	transition:color .3s ease-in;
 }
 input[type="number"]{
 	min-width: 230px;
 	padding-left: 10px; 
 }
+input[type="submit"],button{
+	color: #EEEEEE;
+	display: inline-block;
+	background-color: #2daebf;
+	text-align: center;
+	padding: 10px 20px;
+	font-size: 18px;
+	cursor: pointer;
+	border-radius: 3px;
+	margin: 0px 0px 20px 0px;
+}
+input[type="submit"]:hover{
+	background-color:#007d9a
+}
 .units{
 	min-width: 100px;
 	padding-left: 10px; 
 }
-input[type="submit"],button{
-	border: 2px solid #000;
-	background: #fefefe url(../images/noise.png);
-	padding: 10px 20px;
-	font-size: 20px;
-	font-weight: bold;
-	font-family: Segoe UI;
-	cursor: pointer;
-	border-radius: 3px;
-}
+
 #filter-form-container{
-	background: rgba(0, 0, 0, 0.2);
+	background: rgba(0, 0, 0, 0.4);
 	margin: 0px auto;
 	width: 40%;
 	margin-top: 8%;
@@ -149,7 +174,7 @@ h2{
 	width: 100%;
 	height: 100%;
 	top: 0;
-	widht: 0;
+	left: 0;
 	-webkit-transition: background 800ms ease;
 	-moz-transition: background 800ms ease;
 	-ms-transition: background 800ms ease;
@@ -163,4 +188,108 @@ h2{
 	background: radial-gradient(center, circle cover, #555a5f 0%, #1c1e20 100%);
 	background-color: #2b2b2b;
 }
+.separator{
+	border-bottom: 1px solid #121212;
+	box-shadow: 0 1px #2A2A2A;
+	margin: 20px auto;
+	width: 960px;
+}
+////////////////////////////////////////////////////butten design
+.button{
+	font:15px Calibri, Arial, sans-serif;
+
+	/* A semi-transparent text shadow */
+	text-shadow:1px 1px 0 rgba(255,255,255,0.4);
+	
+	/* Overriding the default underline styling of the links */
+	text-decoration:none !important;
+	white-space:nowrap;
+	
+	display:inline-block;
+	vertical-align:baseline;
+	position:relative;
+	cursor:pointer;
+	padding:10px 20px;
+	
+	background-repeat:no-repeat;
+
+	/* The following two rules are fallbacks, in case
+	   the browser does not support multiple backgrounds. */
+
+	background-position:bottom left;
+	background-image:url('./images/button_bg.png');
+	
+	/* Multiple backgrounds version. The background images
+	   are defined individually in color classes */
+	
+	background-position:bottom left, top right, 0 0, 0 0;
+	background-clip:border-box;
+	
+	/* Applying a default border raidus of 8px */
+	
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;
+	border-radius:8px;
+	
+	/* A 1px highlight inside of the button */
+	
+	-moz-box-shadow:0 0 1px #fff inset;
+	-webkit-box-shadow:0 0 1px #fff inset;
+	box-shadow:0 0 1px #fff inset;
+	
+	/* Animating the background positions with CSS3 */
+	/* Currently works only in Safari/Chrome */
+	
+	-webkit-transition:background-position 1s;
+	-moz-transition:background-position 1s;
+	transition:background-position 1s;
+}
+
+.button:hover{
+	
+	/* The first rule is a fallback, in case the browser
+	   does not support multiple backgrounds
+	*/
+	
+	background-position:top left;
+	background-position:top left, bottom right, 0 0, 0 0;
+}
+
+.button:active{
+	/* Moving the button 1px to the bottom when clicked */
+	bottom:-1px;
+}
+
+/* The three buttons sizes */
+
+.button.medium	{ font-size:18px;width: 120px;}
+
+/* A more rounded button */
+
+.button.rounded{
+	-moz-border-radius:4em;
+	-webkit-border-radius:4em;
+	border-radius:4em;
+}
+
+/* Green Button */
+
+.green.button{
+	color:#345903 !important;
+	border:1px solid #96a37b !important;	
+	background-color: #79be1e;
+	
+	background-image:url('./images/button_bg.png'), url('./images/button_bg.png'), -moz-radial-gradient(center bottom, circle, rgba(162,211,30,1) 0,rgba(162,211,30,0) 100px),-moz-linear-gradient(#82cc27, #74b317);
+	background-image:url('./images/button_bg.png'), url('./images/button_bg.png'), -webkit-gradient(radial, 50% 100%, 0, 50% 100%, 100, from(rgba(162,211,30,1)), to(rgba(162,211,30,0))),-webkit-gradient(linear, 0% 0%, 0% 100%, from(#82cc27), to(#74b317));
+}
+
+.green.button:hover{
+	background-color:#89d228;
+	
+	background-image:url('./images/button_bg.png'), url('./images/button_bg.png'), -moz-radial-gradient(center bottom, circle, rgba(183,229,45,1) 0,rgba(183,229,45,0) 100px),-moz-linear-gradient(#90de31, #7fc01e);
+	background-image:url('./images/button_bg.png'), url('./images/button_bg.png'), -webkit-gradient(radial, 50% 100%, 0, 50% 100%, 100, from(rgba(183,229,45,1)), to(rgba(183,229,45,0))),-webkit-gradient(linear, 0% 0%, 0% 100%, from(#90de31), to(#7fc01e));
+}
+
+////////////////////////////////////////////////////End of button design
+
 
