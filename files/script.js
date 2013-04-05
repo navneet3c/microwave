@@ -276,12 +276,12 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 					w_h[i]=(1/Math.PI)*(Math.acosh(.5*((Math.cosh(Math.PI*.5*s_h[i])-1)+((Math.cosh(Math.PI*.5*s_h[i])+1)*Math.cosh(Math.PI*.5*w_hse[i]))))-(Math.PI*.5*s_h[i]));
 				}
 				
-				% height of substrate of the microstrip design is assumed to be 1/16th of an inch
+				//height of substrate of the microstrip design is assumed to be 1/16th of an inch
 				var s=s_h*0.1588*10;
 				var w=w_h*0.1588*10;
 				var length=3e11/(cut_freq*4*Math.sqrt(Er));
 				
-				%WIDTH of feedlines
+				//WIDTH of feedlines
 				
 				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(.23+(.11/Er))));
 				var B=377*Math.PI/(2*r0*Math.sqrt(Er));
