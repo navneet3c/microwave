@@ -1,6 +1,7 @@
 var response,filter,order,fc,bandwidth,ripple,r0,method,line,g,Er,delta;
 $(document).ready(function(){
-	$("#responseSelect").change(function(){
+	$("#responseSelect").change(function(event){
+		event.preventDefault();
 		if($(this).val()==2)
 			$("#frequency-table-append").after("<tr>\
 							<td>Passband ripple (dB) :</td>\
@@ -9,7 +10,8 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 	});
-	$("#filterSelect").change(function(){
+	$("#filterSelect").change(function(event){
+		event.preventDefault();
 		if($(this).val()>2)
 			$("#frequency-table-append").after("<tr>\
 							<td>Bandwidth in percentage of Central Frequency:</td>\
@@ -18,21 +20,25 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 	});
-	$(".scrollnext").click(function(){
-		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))},'slow');
+	$(".scrollnext").click(function(event){
+		event.preventDefault();
+		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))}, 'slow');
 		return false;
 	});
-	$("#frequency-submit").click(function(){
+	$("#frequency-submit").click(function(event){
+		event.preventDefault();
 		if($("#filterSelect").val()>2) $("#cut_off_text").html("Center");
 		else  $("#cut_off_text").html("Cutoff");
 	});
-	$("#lumped-next").click(function(){
+	$("#lumped-next").click(function(event){
+		event.preventDefault();
 		$("#container3").animate({"left":$("#container4").css("left")});
 		$("#lumped-next-container").fadeOut();
 	});
 	
-	$("#calculate-lumped").click(function(){
-	//get values
+	$("#calculate-lumped").click(function(event){
+		event.preventDefault();
+		//get values
 		response=$('#filter-form-container select[name=response]').val()//chebyshev r butterworth
 		filter=$('#filter-form-container select[name=filter]').val()
 		r0=$('#frequency-form-container input[name=r0]').val()
@@ -88,141 +94,107 @@ $(document).ready(function(){
 		
 		
 	})
-	$("#method-next").click(function(){
+	$("#method-next").click(function(event){
+		event.preventDefault();
 		$("#container3").animate({"left":$("#container5").css("left")});
 		//calculate circuit diagram
 		Er=parseInt($("#method-form-container input[name=er]").val());
 		if(filter<=2){
 			method=$("#method-form-container select[name=method]").val();
 			if(method==1){//stub for lpf hpf
-			//k starts from 1, l for lpf, c for hpf
-			var N=1+(1/g[1][0]),j,z_half;
-			if(filter==1){
-				for(i=g.length-2;i>0;i--){
-				if(g[i][1]==0) { g[i][0]=(1/g[i][0]);}
+				//k starts from 1, l for lpf, c for hpf
+				var N=1+(1/g[1][0]),j,z_half;
+				if(filter==1){
+					for(i=g.length-2;i>0;i--){
+					if(g[i][1]==0) { g[i][0]=(1/g[i][0]);}
+					}
+				k[1]=N;
+				k[2]=g[1][0]*N;
+				j=3;
+				}else{
+					for(i=g.length-2;i>0;i--){
+					if(g[i][1]==1){
+						g[i][0]=(1/g[i][0]);
+						}
+					}
+						k[1]=N;
+						k[2]=g[1][0]*N;
+						j=3;
 				}
-      k[1]=N;
-      k[2]=g[1][0]*N;
-			j=3;
-			}else{
-				for(i=g.length-2;i>0;i--){
-				if(g[i][1]==1){
-					g[i][0]=(1/g[i][0]);
+				for(i=2;i<g.length-2;i++){
+					if(i%2==1){
+						z_half=g[i][0]/2;
+						N=1+(1/z_half);
+						k[j]=N*z_half;
+						k[j+1]=0.5*N;
+						k[j+2]=k[j];
+						j=j+2;
+					}else
+						k[j]=g[i][0];
+					j=j+1;
+				}
+				N=1+(1/g[i][0]);        
+				k[j]=g[i][0]*N;
+				k[j+1]=N;
+				
+				for(i=k.length-1;i>=0;i--)
+					k[i]*=50;
+				var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
+				for(i=1;i<=2*order-1;++i){
+					A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
+					B=377*Math.PI/(2*k[i]*Math.sqrt(Er));
+					w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+					w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+					if ((w1<=2*1.588) && (w1>0))
+						k[i]=w1;
+					else if ((w2>2*1.588) && (w2>0))
+						k[i]=w2;
+				}
+				length=3e11/(fc*8*Math.sqrt(Er));
+				z_feed=50;//feed
+				A=(z_feed/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er)));
+				B=377*Math.PI/(2*z_feed)*Math.sqrt(Er);
+				w1_feed=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+				w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+				if ((w1_feed<=2*1.588) && (w1_feed>0))
+					w_feed=w1_feed;
+				else if ((w2_feed>2*1.588) && (w2_feed>0))
+					w_feed=w2_feed;
+				
+				//drawing canvas
+				
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+	  			canvas.width = $("#micro-output-output").width();
+				canvas.height= 450;
+				context.fillStyle="#FFFFFF";
+	  			context.fillRect(0,0,canvas.width,canvas.height);
+				context.fillStyle="#aa8833";
+				x=20;
+				y=1.8;
+				context.font = "bold 16px sans-serif";
+				var sx=canvas.width/(order*25),sy=canvas.height/30;
+				for(i=1;i<=(2*order)-1;i++){
+					if (i%2==1){
+						context.fillStyle="#aa8833";
+						context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
+						context.fillStyle="#000000";
+						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+						x=x+k[i]/2;
+						y=y+length;
+					}else{
+						context.fillStyle="#aa8833";
+					    context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
+							context.fillStyle="#000000";
+							context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+					    x=x+length-(k[i+1]/2);
+					    y=y-length;
 					}
 				}
-					k[1]=N;
-					k[2]=g[1][0]*N;
-					j=3;
-			}
-			for(i=2;i<g.length-2;i++){
-				if(i%2==1){
-					z_half=g[i][0]/2;
-					N=1+(1/z_half);
-					k[j]=N*z_half;
-					k[j+1]=0.5*N;
-					k[j+2]=k[j];
-					j=j+2;
-				}else
-					k[j]=g[i][0];
-				j=j+1;
-			}
-			N=1+(1/g[i][0]);        
-      k[j]=g[i][0]*N;
-      k[j+1]=N;
-			
-			for(i=k.length-1;i>=0;i--)
-				k[i]*=50;
-			var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
-			for(i=1;i<=2*order-1;++i){
-				A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
-				B=377*Math.PI/(2*k[i]*Math.sqrt(Er));
-				w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
-				w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
-				if ((w1<=2*1.588) && (w1>0))
-					k[i]=w1;
-				else if ((w2>2*1.588) && (w2>0))
-					k[i]=w2;
-			}
-			length=3e11/(fc*8*Math.sqrt(Er));
-			z_feed=50;//feed
-			A=(z_feed/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er)));
-			B=377*Math.PI/(2*z_feed)*Math.sqrt(Er);
-			w1_feed=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
-			w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
-			if ((w1_feed<=2*1.588) && (w1_feed>0))
-				w_feed=w1_feed;
-			else if ((w2_feed>2*1.588) && (w2_feed>0))
-				w_feed=w2_feed;
-			
-
-	var canvas=document.getElementById("microcanvas");
-	var context = canvas.getContext('2d');
-  canvas.width = $("#micro-output-output").width();
-	canvas.height= 450;
-	context.fillStyle="#FFFFFF";
-  context.fillRect(0,0,canvas.width,canvas.height);
-context.fillStyle="#aa8833";
-x=20;
-y=1.8;
-context.font = "bold 16px sans-serif";
-var sx=canvas.width/(order*25),sy=canvas.height/30;
-for(i=1;i<=(2*order)-1;i++){
-if (i%2==1){
-	context.fillStyle="#aa8833";
-	context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
-	context.fillStyle="#000000";
-	context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-	x=x+k[i]/2;
-	y=y+length;
-}else{
-	context.fillStyle="#aa8833";
-    context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
-		context.fillStyle="#000000";
-		context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-    x=x+length-(k[i+1]/2);
-    y=y-length;
-}
-}
-context.fillStyle="#bb9944";
-context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
-context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
-			//drawing canvas
-			var canvas=document.getElementById("microcanvas");
-			var context = canvas.getContext('2d');
-  			canvas.width = $("#micro-output-output").width();
-			canvas.height= 450;
-			context.fillStyle="#FFFFFF";
-  			context.fillRect(0,0,canvas.width,canvas.height);
-			context.fillStyle="#aa8833";
-			x=20;
-			y=1.8;
-			context.font = "bold 16px sans-serif";
-			var sx=canvas.width/(order*25),sy=canvas.height/30;
-			for(i=1;i<=(2*order)-1;i++){
-				if (i%2==1){
-					context.fillStyle="#aa8833";
-					context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
-					context.fillStyle="#000000";
-					context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-					x=x+k[i]/2;
-					y=y+length;
-				}else{
-					context.fillStyle="#aa8833";
-    				context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
-					context.fillStyle="#000000";
-					context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-    				x=x+length-(k[i+1]/2);
-    				y=y-length;
-				}
-				console.log(sx,sy,x,y,k[i],length,x*sx)
-			}
-			context.fillStyle="#996611";
-			//xlabel('Length in mm','fontsize',12,'fontweight','b');
-			//ylabel('Width in mm','fontsize',12,'fontweight','b');
-			context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
-			context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
-			
-			
+				context.fillStyle="#bb9944";
+				context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+				context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+				
 			}else{//stepped impedance for lpf hpf
 				//g values have been calculated, now calculating the capacitor and inductor values
 				var w=2*Math.PI*fc;
@@ -273,39 +245,39 @@ context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 				}
 				
 				
-var canvas=document.getElementById("microcanvas");
-	var context = canvas.getContext('2d');
-  canvas.width = $("#micro-output-output").width();
-	canvas.height= 450;
-	context.fillStyle="#FFFFFF";
-  context.fillRect(0,0,canvas.width,canvas.height);
-x=20;
-y=0.05;
-offset=200
-context.font = "bold 16px sans-serif";
-var sx=canvas.width/(order*35),sy=canvas.height/10;
-i=1;
-context.fillStyle="#aa8833";
-context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
-context.fillStyle="#000000";
-context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+80+offset);
-context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
-for(i=2;i<=order;i++){
-	x=x+length[i-1];
-	y=y+(width[i-1]/2)-(width[i]/2);
-	context.fillStyle="#aa8833";
-	context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
-	context.fillStyle="#000000";
-	context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx,y*sy+60+offset);
-	context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
-	console.log(x,y,length[i],width[i])
-}
-context.fillStyle="#996611";
-var length_feed_lines=Math.max.apply( Math, length );
-var width_feed_lines=0.4*0.1588*10;
-context.fillRect((20-length_feed_lines)*sx,(0.05+(width[1]/2)-(width_feed_lines/2))*sy+offset,(length_feed_lines)*sx,width_feed_lines*sy);
-context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*sy+offset,length_feed_lines*sx,width_feed_lines*sy);
-				
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+				canvas.width = $("#micro-output-output").width();
+				canvas.height= 450;
+				context.fillStyle="#FFFFFF";
+				context.fillRect(0,0,canvas.width,canvas.height);
+				x=20;
+				y=0.05;
+				offset=200
+				context.font = "bold 16px sans-serif";
+				var sx=canvas.width/(order*35),sy=canvas.height/10;
+				i=1;
+				context.fillStyle="#aa8833";
+				context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
+				context.fillStyle="#000000";
+				context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+20,y*sy+80+offset);
+				context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
+				for(i=2;i<=order;i++){
+					x=x+length[i-1];
+					y=y+(width[i-1]/2)-(width[i]/2);
+					context.fillStyle="#aa8833";
+					context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
+					context.fillStyle="#000000";
+					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx,y*sy+60+offset);
+					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+40+offset);
+					console.log(x,y,length[i],width[i])
+				}
+				context.fillStyle="#996611";
+				var length_feed_lines=Math.max.apply( Math, length );
+				var width_feed_lines=0.4*0.1588*10;
+				context.fillRect((20-length_feed_lines)*sx,(0.05+(width[1]/2)-(width_feed_lines/2))*sy+offset,(length_feed_lines)*sx,width_feed_lines*sy);
+				context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*sy+offset,length_feed_lines*sx,width_feed_lines*sy);
+								
 			}
 		}else{//coupled for bp and br
 			delta=$("#filter-form-container select[name=delta]").val();
@@ -333,7 +305,7 @@ context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*
 				for(i=1;i<g.length-1;i++){
 					var A=((Z_ose[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
 					var B=377*Math.PI/(2*Z_ose[i]*Math.sqrt(Er));
-					var w1_hse=8*Math.exp(A)/Math.exp((2*A)-2);
+					var w1_hse=8*Math.exp(A)/(Math.exp(2*A)-2);
 					var w2_hse=(2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
 					if ((w1_hse<=2*1.588) && (w1_hse>0))
 				    	w_hse[i]=w1_hse;
@@ -378,7 +350,8 @@ context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*
 					w[i]=w_h[i]*0.1588*10;
 				}
 				var length=(3*Math.pow(10,11))/(fc*4*Math.sqrt(Er));
-				
+				console.log(s);
+				console.log(w);
 				//WIDTH of feedlines
 				
 				var A=((r0/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
@@ -390,6 +363,7 @@ context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*
 				else if ((w_feed2>2*1.588) && (w_feed2>0))
 				    w_feed=w_feed2;
 				
+<<<<<<< HEAD
 							
 var canvas=document.getElementById("microcanvas");
 	var context = canvas.getContext('2d');
@@ -426,6 +400,43 @@ context.fillRect((10-length)*sx,(5+w[1]-w_feed)*sy+offset,length*sx,w_feed*sy)
 context.fillRect((x+length)*sx,y*sy,length*sx,w_feed*sy)
 
 				
+=======
+				//drawing canvas
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+  				canvas.width = $("#micro-output-output").width();
+				canvas.height= 450;
+				context.fillStyle="#FFFFFF";
+  				context.fillRect(0,0,canvas.width,canvas.height);
+				context.fillStyle="#aa8833";
+				x=20;
+				y=1.8;
+				context.font = "bold 16px sans-serif";
+				//var sx=canvas.width/(order*25),sy=canvas.height/30;
+				for(i=1;i<=(2*order)-1;i++){
+					/*if (i%2==1){
+						context.fillStyle="#aa8833";
+						context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
+						context.fillStyle="#000000";
+						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+						x=x+k[i]/2;
+						y=y+length;
+					}else{
+						context.fillStyle="#aa8833";
+	    				context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
+						context.fillStyle="#000000";
+						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
+	    				x=x+length-(k[i+1]/2);
+	    				y=y-length;
+					}*/
+					//console.log(sx,sy,x,y,k[i],length,x*sx)
+				}
+				context.fillStyle="#bb9944";
+				//xlabel('Length in mm','fontsize',12,'fontweight','b');
+				//ylabel('Width in mm','fontsize',12,'fontweight','b');
+				//context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
+				//context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
+>>>>>>> 98b18e558766a7d2a0ecebf27953ccf4f1e7dc30
 			
 			}else{//band stop
 				
