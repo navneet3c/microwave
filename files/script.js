@@ -20,21 +20,16 @@ $(document).ready(function(){
 							</td>\
 						</tr>");
 	});
-	$(".scrollnext").click(function(event){
-		event.preventDefault();
-		$("#top-container").animate({"left":"-="+parseInt($("body").css("width"))}, 'slow');
-		return false;
-	});
 	$("#frequency-submit").click(function(event){
 		event.preventDefault();
 		if($("#filterSelect").val()>2) $("#cut_off_text").html("Center");
 		else  $("#cut_off_text").html("Cutoff");
 	});
-	$("#lumped-next").click(function(event){
+	/*$("#lumped-next").click(function(event){
 		event.preventDefault();
 		$("#container3").animate({"left":$("#container4").css("left")});
 		$("#lumped-next-container").fadeOut();
-	});
+	});*/
 	
 	$("#calculate-lumped").click(function(event){
 		event.preventDefault();
@@ -94,9 +89,14 @@ $(document).ready(function(){
 		
 		
 	})
+	$("#lumped-next").click(function(event){
+		event.preventDefault();
+		//$("#container3").animate({"left":$("#container4").css("left")});
+		$("#lumped-next-container").fadeOut();
+	});
 	$("#method-next").click(function(event){
 		event.preventDefault();
-		$("#container3").animate({"left":$("#container5").css("left")});
+		//$("#container3").animate({"left":$("#container5").css("left")});
 		//calculate circuit diagram
 		Er=parseInt($("#method-form-container input[name=er]").val());
 		if(filter<=2){
@@ -165,7 +165,7 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-	  			canvas.width = $("#micro-output-output").width();
+	  			canvas.width = 520;
 				canvas.height= 450;
 				context.fillStyle="#FFFFFF";
 	  			context.fillRect(0,0,canvas.width,canvas.height);
@@ -247,7 +247,9 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = $("#micro-output-output").width();
+				canvas.width = $("#micro-output-output").width();$(window).animate({
+					scrollTop: $(window).scrollTop() + window.W,
+				}, 250);
 				canvas.height= 450;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
@@ -396,5 +398,51 @@ $(document).ready(function(){
 		}
 			
 		
+	});
+});
+
+
+$(function(){
+	var container = $(".container");
+	var cache = {};
+	window.H = 0;
+	window.W = 0;
+	window.page = 1;
+	var C = function(i) {
+		if(typeof cache["container"+i] !== "undefined")
+			return cache["container"+i];
+		return cache["container"+i] = $("#container"+i);
+	};
+	var alterspacing = function(){
+		var height = $(window).height();
+		var width = $(window).width();
+		window.H = height;
+		window.W = width;
+		var i=0;
+		container.each(function(){ 
+			$(this).height(height*0.80); 
+			$(this).css({left : i*width});
+			$(this).hide();
+			i++;
+		});
+		C(window.page).show();
+		if(window.page>3){
+			
+		}
+	};
+	alterspacing();
+	$(window).resize(alterspacing);
+	container.find(".scrollnext").click(function(e){
+		e.preventDefault();
+		console.log(window.page);
+		C(window.page+1).show();
+		console.log("showing");
+		$("#top-container").animate({"left":"-="+window.W},150,function(){
+			console.log("showing");
+			C(window.page).hide(function(){
+				$("#top-container").css("left","0px");
+				window.page++;
+			});
+		});
 	});
 });

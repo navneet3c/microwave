@@ -5,21 +5,36 @@
 	<title>Microwave Filter Design
 	</title>
 	<link href="files/style.css" rel="stylesheet" type="text/css">
+	<link href="files/buttons.css" rel="stylesheet" type="text/css">
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<script type="text/javascript" src="files/jquery.min.js"></script>
 	<script type="text/javascript" src="files/script.js"></script>
 </head>
 <body class="stretch">
-<div id="header">Microwave Filters</div>
-<div class="separator" style="position: relative; top: 68px;"></div>
+
+<!------------facebook like ------->
+<div id="fb-root" style="display: none;"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=312934432168121";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!------------facebook like ends here------->
+
+<div id="header"><h1>Microwave Filters</h1><span><div class="fb-like" data-href="http://url/" data-send="false" data-width="450" data-show-faces="true" data-colorscheme="dark"></div></span>
+<div class="clearer"></div>
+<div class="separator"></div>
+</div>
 <div id="top-container" class="stretch">
 	<div class="container" id="container1">
-		<div id="filter-form-container">
+		<div id="filter-form-container" class="form-container">
 				<form action="" class="input-form">
 					<table>
 						<tbody>
 						<tr>
-							<td colspan="2"><h2>Select Filter</h2></td>
+							<td colspan="2"><h2><span>Select</span> filter</h2></td>
 						</tr>
 						<tr>
 							<td>Response Type:</td>
@@ -52,61 +67,72 @@
 				</form>
 		</div>
 	</div>
-		<div class="container" id="container2">
-			<div id="frequency-form-container">
-				<form action="" class="input-form">
-					<table>
-						<tbody>
-						<tr>
-							<td colspan=2><h2>Select Filter Characteristics</h2></td>
-						</tr>
-						<tr>
-							<td>Filter impedance (ohm):</td>
-							<td><input type="number" min="1" value="50" name="r0"></td>
-						</tr>
-						<tr>
-							<td>Order of filter:</td>
-							<td><input type="number" min="1" value="3" name="order"></td>
-						</tr>
-						<tr id="frequency-table-append">
-							<td><span id="cut_off_text">Cutoff</span> Frequency:</td>
-							<td>
-								<input type="number" name="fc" value="1">
-								<select size="1" name="fc-unit" class="units">
-									<option value="0">Hz</option>
-									<option value="3">kHz</option>
-									<option value="6">MHz</option>
-									<option value="9" selected>GHz</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>&nbsp;</td>
-							<td>
-								<input type="submit" value="Next" name="next" id="calculate-lumped" class="scrollnext blue button medium rounded">
-							</td>
-						</tr>
-						</tbody>
-					</table>
-				</form>
-			</div>
+	<div class="container" id="container2">
+		<div id="frequency-form-container" class="form-container">
+			<form action="" class="input-form">
+				<table>
+					<tbody>
+					<tr>
+						<td colspan=2><h2></span>Select Filter<span> Characteristics</h2></td>
+					</tr>
+					<tr>
+						<td>Filter impedance (ohm):</td>
+						<td><input type="number" min="1" value="50" name="r0"></td>
+					</tr>
+					<tr>
+						<td>Order of filter:</td>
+						<td><input type="number" min="1" value="3" name="order"></td>
+					</tr>
+					<tr id="frequency-table-append">
+						<td><span id="cut_off_text">Cutoff</span> Frequency:</td>
+						<td>
+							<input type="number" name="fc" value="1">
+							<select size="1" name="fc-unit" class="units">
+								<option value="0">Hz</option>
+								<option value="3">kHz</option>
+								<option value="6">MHz</option>
+								<option value="9" selected>GHz</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<input type="submit" value="Next" name="next" id="calculate-lumped" class="scrollnext blue button medium rounded">
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</form>
 		</div>
+	</div>
 	<div class="container" id="container3">
-		<div id="lumped-output-container">
-			<h2>Lumped Components Output</h2>
-			<div id="lumped-output"> </div><br />
-			<div id="lumped-next-container">
-				<button id="lumped-next" class="scrollnext">Next</button>
-			</div>
+		<div id="lumped-output-container" class="form-container">
+			<table>
+				<tbody>
+					<tr>
+						<td colspan=2><h2><span>Lumped Components</span> Output</h2></td>
+					</tr>
+					<tr>
+						<td colspan=2><div id="lumped-output"> </div><br /></td>
+					</tr>
+					<tr>
+						<td colspan=2><div id="lumped-next-container"></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<button id="lumped-next" class="scrollnext blue button medium rounded">Next</button>
+			
 		</div>
 	</div>
 	<div class="container" id="container4">
-		<div id="method-form-container">
+		<div id="method-form-container" class="form-container">
 				<form action="" class="input-form">
 					<table>
 						<tbody>
 						<tr>
-							<td colspan=2><h2>Transmission Line Properties</h2></td>
+							<td colspan=2><h2><span>Transmission Line</span> Properties</h2></td>
 						</tr>
 						<tr id="method-table-append">
 							<td>Relative permittivity &epsilon;<sub>r</sub></td>
@@ -124,12 +150,13 @@
 		</div>
 	</div>
 	<div class="container" id="container5">
-		<div id="micro-output-output">
-			<h2>Filter Design Output</h2>
+		<div id="micro-output-output" class="form-container">
+			<h2><span>Filter Design</span> Output</h2>
 			<canvas id="microcanvas"></canvas>
 		</div>
 	</div>
 	<div id="background"></div>
 </div>
+<div id="footer">Powered By Delta Force</div>
 </body>
 </html>
