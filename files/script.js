@@ -363,8 +363,7 @@ $(document).ready(function(){
 				else if ((w_feed2>2*1.588) && (w_feed2>0))
 				    w_feed=w_feed2;
 				
-<<<<<<< HEAD
-							
+
 var canvas=document.getElementById("microcanvas");
 	var context = canvas.getContext('2d');
   canvas.width = $("#micro-output-output").width();
@@ -399,8 +398,6 @@ context.fillRect(x*sx,y*sy+offset,length*sx,w[order+1]*sy)
 context.fillRect((10-length)*sx,(5+w[1]-w_feed)*sy+offset,length*sx,w_feed*sy)
 context.fillRect((x+length)*sx,y*sy,length*sx,w_feed*sy)
 
-				
-=======
 				//drawing canvas
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
@@ -436,7 +433,6 @@ context.fillRect((x+length)*sx,y*sy,length*sx,w_feed*sy)
 				//ylabel('Width in mm','fontsize',12,'fontweight','b');
 				//context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
 				//context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
->>>>>>> 98b18e558766a7d2a0ecebf27953ccf4f1e7dc30
 			
 			}else{//band stop
 				
