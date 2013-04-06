@@ -59,7 +59,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td>
-								<input type="submit" value="Next" name="next" id="frequency-submit" class="scrollnext blue button medium rounded">
+								<input type="submit" value="Next" name="next" id="frequency-submit" class="scrollnext blue button medium rounded" />
 							</td>
 						</tr>
 						</tbody>
@@ -96,7 +96,9 @@
 						</td>
 					</tr>
 					<tr>
-						<td>&nbsp;</td>
+						<td>
+							<input type="submit" value="Back" name="back" id="calculate-lumped-rev" class="scrollback green button medium rounded">
+						</td>
 						<td>
 							<input type="submit" value="Next" name="next" id="calculate-lumped" class="scrollnext blue button medium rounded">
 						</td>
@@ -117,13 +119,11 @@
 						<td colspan=2><div id="lumped-output"> </div><br /></td>
 					</tr>
 					<tr>
-						<td colspan=2><div id="lumped-next-container"></td>
+						<td><button id="lumped-rev" class="scrollback green button medium rounded">Back</button></td>
+						<td><button id="lumped-next" class="scrollnext blue button medium rounded">Next</button></td>
 					</tr>
 				</tbody>
 			</table>
-			
-			<button id="lumped-next" class="scrollnext blue button medium rounded">Next</button>
-			
 		</div>
 	</div>
 	<div class="container" id="container4">
@@ -139,7 +139,9 @@
 							<td><input type="number" value="5" name="er"></td>
 						</tr>
 						<tr>
-							<td>&nbsp;</td>
+							<td>
+								<input type="submit" value="Back" name="back" id="method-back" class="scrollback green button medium rounded">
+							</td>
 							<td>
 								<input type="submit" value="Next" name="next" id="method-next" class="scrollnext blue button medium rounded">
 							</td>
@@ -151,8 +153,19 @@
 	</div>
 	<div class="container" id="container5">
 		<div id="micro-output-output" class="form-container">
-			<h2><span>Filter Design</span> Output</h2>
-			<canvas id="microcanvas"></canvas>
+			<table>
+				<tbody>
+					<tr>
+						<td colspan="2"><h2><span>Filter Design</span> Output</h2></td>
+					</tr>
+					<tr>
+						<td><canvas id="microcanvas"></canvas></td>
+					</tr>
+					<tr>
+						<td><button id="lumped-rev" class="scrollback green button medium rounded">Back</button></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<div id="background"></div>
