@@ -190,8 +190,8 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = 420;
-				canvas.height= 300;
+				canvas.width = 520;
+				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=5;
@@ -210,13 +210,13 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,k[i]*sx,length*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset);
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset+(i%4)*10);
 				}else{
 					x=x+k[i-1];
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length*sx,k[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(length*1000)/1000,x*sx+5,y*sy-10+offset);
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx+5,y*sy-10+offset-(i%4)*10);
 				}
 				}
 				context.fillStyle="#996611";
@@ -280,8 +280,8 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = 420;
-				canvas.height= 300;
+				canvas.width = 520;
+				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=1;
@@ -289,7 +289,7 @@ $(document).ready(function(){
 				context.font = "bold 10px sans-serif";
 				var length_feed_lines=Math.max.apply( Math, length );
 				var width_feed_lines=Math.max.apply( Math, width )
-				var sx=canvas.width/(order*length_feed_lines),sy=canvas.height/(width_feed_lines*2);
+				var sx=canvas.width*Math.sqrt(order/3)/((order+2)*1.7*length_feed_lines),sy=canvas.height/(width_feed_lines*2);
 				context.fillStyle="#996611";
 				y=(width_feed_lines-width[0])/2;
 				context.fillRect(x*sx,y*sy+offset,length[0]*sx,width[0]*sy);
@@ -299,8 +299,8 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+5,y*sy+40+offset);
-					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx+5,y*sy+60+offset);
+					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+5,y*sy+40+offset+(i%4)*20);
+					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx+5,y*sy+60+offset+(i%4)*20);
 				}
 				context.fillStyle="#996611";
 				x=x+length[i-1];
@@ -366,7 +366,7 @@ $(document).ready(function(){
 				var length_feed_lines=length;
 				w[0]=0;s[0]=0;
 				var width_feed_lines=Math.max.apply( Math, w )
-				var sx=canvas.width/((order+3)*length_feed_lines),sy=canvas.height/(width_feed_lines*order*2);
+				var sx=canvas.width/((order+3)*length_feed_lines),sy=canvas.height/(width_feed_lines*order*3);
 				y=0.2;x=1;
 				context.fillStyle="#996611";
 				context.fillRect(x*sx,y*sy+offset,length*sx/2,w[order+1]*sy);
