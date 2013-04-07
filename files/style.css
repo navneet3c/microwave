@@ -141,16 +141,15 @@ input[type="submit"]:hover{
 	margin: 0px auto;
 }
 #lumped-output-container{
-height: 100%;
+	height: inherit;
 }
 #lumped-output{
 	height: 250px;
 	overflow-y: auto;
+	overflow-x: hidden;
 }
 #micro-output-output{
 	height: inherit;
-	overflow-y: auto;
-	overflow-x: hidden;
 }
 h2{
 	color: #3299bb;
