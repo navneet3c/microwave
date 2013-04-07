@@ -190,8 +190,8 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = 520;
-				canvas.height= 400;
+				canvas.width = 420;
+				canvas.height= 300;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=5;
@@ -280,8 +280,8 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = 520;
-				canvas.height= 400;
+				canvas.width = 420;
+				canvas.height= 300;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=1;
