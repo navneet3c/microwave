@@ -122,7 +122,13 @@ input[type="submit"]:hover{
 #filter-form-container table,#frequency-form-container table,#method-form-container table,#micro-output-output table{
 	margin: 0px auto;
 }
-
+#lumped-output-container{
+height: 100%;
+}
+#lumped-output{
+	height: 250px;
+	overflow-y: auto;
+}
 h2{
 	color: #3299bb;
 	display: block;

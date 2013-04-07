@@ -14,13 +14,13 @@
 
 <!------------facebook like ------->
 <div id="fb-root" style="display: none;"></div>
-<script>(function(d, s, id) {
+<script>/*(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=312934432168121";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+}(document, 'script', 'facebook-jssdk'));*/</script>
 <!------------facebook like ends here------->
 
 <div id="header"><h1>Microwave Filters</h1><span><div class="fb-like" data-href="http://url/" data-send="false" data-width="450" data-show-faces="true" data-colorscheme="dark"></div></span>
@@ -86,7 +86,7 @@
 					<tr id="frequency-table-append">
 						<td><span id="cut_off_text">Cutoff</span> Frequency:</td>
 						<td>
-							<input type="number" name="fc" value="1">
+							<input type="number" name="fc" value="4">
 							<select size="1" name="fc-unit" class="units">
 								<option value="0">Hz</option>
 								<option value="3">kHz</option>
@@ -134,9 +134,17 @@
 						<tr>
 							<td colspan=2><h2><span>Transmission Line</span> Properties</h2></td>
 						</tr>
+						<tr>
+							<td>High Impedance value</td>
+							<td><input type="number" value="100" name="zhigh"></td>
+						</tr>
+						<tr>
+							<td>Low Impedance value</td>
+							<td><input type="number" value="20" name="zlow"></td>
+						</tr>
 						<tr id="method-table-append">
 							<td>Relative permittivity &epsilon;<sub>r</sub></td>
-							<td><input type="number" value="5" name="er"></td>
+							<td><input type="number" value="3.2" name="er"></td>
 						</tr>
 						<tr>
 							<td>&nbsp;</td>
@@ -151,8 +159,14 @@
 	</div>
 	<div class="container" id="container5">
 		<div id="micro-output-output" class="form-container">
-			<h2><span>Filter Design</span> Output</h2>
+			<table>
+			<tr><td>
+				<h2><span>Filter Design</span> Output</h2>
+			</td></tr>
+			<tr><td>
 			<canvas id="microcanvas"></canvas>
+			</td></tr>
+			</table>
 		</div>
 	</div>
 	<div id="background"></div>
