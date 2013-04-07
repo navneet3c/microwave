@@ -12,25 +12,24 @@ $(document).ready(function(){
 	});
 	$("#filterSelect").change(function(event){
 		event.preventDefault();
-		if($(this).val()>2)
-			$("#frequency-table-append").after("<tr>\
+		if($(this).val()>2){
+			if($("#band-central").length === 0)
+			$("#frequency-table-append").after("<tr id=\"band-central\">\
 							<td>Bandwidth in percentage of Central Frequency:</td>\
 							<td>\
 								<input type=\"number\" value=\"0.1\" name=\"delta\" step=\"0.05\">\
 							</td>\
 						</tr>");
+		} else {
+			if($("#band-central").length !== 0)
+				$("#band-central").remove();
+		}
 	});
 	$("#frequency-submit").click(function(event){
 		event.preventDefault();
 		if($("#filterSelect").val()>2) $("#cut_off_text").html("Center");
 		else  $("#cut_off_text").html("Cutoff");
 	});
-	/*$("#lumped-next").click(function(event){
-		event.preventDefault();
-		$("#container3").animate({"left":$("#container4").css("left")});
-		$("#lumped-next-container").fadeOut();
-	});*/
-	
 	$("#calculate-lumped").click(function(event){
 		event.preventDefault();
 		//get values
@@ -41,18 +40,25 @@ $(document).ready(function(){
 		if($("#filterSelect").val()>2){
 			bandwidth=parseFloat($('#frequency-form-container input[name=delta]').val());
 			bandwidth*=fc;
+			if($("#dis-type").length !== 0){
+				$("#dis-type").remove();
+			}
 		}
-		else
-			$("#method-table-append").after("<tr>\
-							<td>Type of design:</td>\
-							<td>\
-								<select size=\"1\" name=\"method\">\
-									<option value=\"1\" selected>Stub Method</option>\
-									<option value=\"2\">Stepped-Impedance Method</option>\
-								</select>\
-							</td>\
-						</tr>");
+		else{
+			if($("#dis-type").length === 0){
+				$("#method-table-append").after("<tr id=\"dis-type\">\
+								<td>Type of design:</td>\
+								<td>\
+									<select size=\"1\" name=\"method\">\
+										<option value=\"1\" selected>Stub Method</option>\
+										<option value=\"2\">Stepped-Impedance Method</option>\
+									</select>\
+								</td>\
+							</tr>");
+			}
+		}
 		fc=parseFloat($('#frequency-form-container input[name=fc]').val())*Math.pow(10,$('#frequency-form-container select[name=fc-unit]').val());
+
 		g=new Array(),k=new Array();
 		g[0]=[1,3];//type: 0=cap;1=ind,3=res;
 		if(response==1){//butterworth g
@@ -92,7 +98,6 @@ $(document).ready(function(){
 	})
 	$("#lumped-next").click(function(event){
 		event.preventDefault();
-		//$("#container3").animate({"left":$("#container4").css("left")});
 		$("#lumped-next-container").fadeOut();
 	});
 	$("#method-next").click(function(event){
@@ -186,7 +191,7 @@ $(document).ready(function(){
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
 				canvas.width = 520;
-				canvas.height= 450;
+				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=5;
@@ -205,15 +210,13 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,k[i]*sx,length*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset);;
-					console.log(x,y,k[i],sx,sy)
+					context.fillText("w="+Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset);
 				}else{
 					x=x+k[i-1];
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length*sx,k[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(length*1000)/1000,x*sx+5,y*sy-10+offset);;
-					console.log(x,y,k[i],sx,sy)
+					context.fillText("w="+Math.round(length*1000)/1000,x*sx+5,y*sy-10+offset);
 				}
 				}
 				context.fillStyle="#996611";
@@ -223,7 +226,6 @@ $(document).ready(function(){
 					x=x+k[i-1];
 				y=0.5;
 				context.fillRect(x*sx,y*sy+offset,length*sx,sy);
-				console.log(x,y,k[i])
 				
 			}else{//stepped impedance for lpf hpf
 				var w=2*Math.PI*fc;
@@ -279,7 +281,7 @@ $(document).ready(function(){
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
 				canvas.width = 520;
-				canvas.height= 450;
+				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=5;
@@ -299,13 +301,11 @@ $(document).ready(function(){
 					context.fillStyle="#000000";
 					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+5,y*sy+40+offset);
 					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx+5,y*sy+60+offset);
-					console.log(x,y,length[i],width[i])
 				}
 				context.fillStyle="#996611";
 				x=x+length[i-1];
 				y=y+(width[i-1]/2)-(width[i]/2);
 				context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
-				console.log(x,y,length[i],width[i])
 			}
 		}else{//coupled for bp and br
 			delta=parseFloat($("#filter-form-container select[name=delta]").val());
@@ -392,8 +392,8 @@ $(document).ready(function(){
 
 var canvas=document.getElementById("microcanvas");
 	var context = canvas.getContext('2d');
-  canvas.width = $("#micro-output-output").width();
-	canvas.height= 450;
+  canvas.width = 520;
+	canvas.height= 400;
 	context.fillStyle="#FFFFFF";
   context.fillRect(0,0,canvas.width,canvas.height);
 x=10;
@@ -426,38 +426,38 @@ context.fillRect((x+length)*sx,y*sy,length*sx,w_feed*sy)
 				//drawing canvas
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-  				canvas.width = $("#micro-output-output").width();
-				canvas.height= 450;
+  				canvas.width = 460;
+				canvas.height=320;
 				context.fillStyle="#FFFFFF";
-  				context.fillRect(0,0,canvas.width,canvas.height);
-				context.fillStyle="#aa8833";
-				x=20;
-				y=1.8;
+				context.fillRect(0,0,canvas.width,canvas.height);
+				x=10;
+				y=5;
+				offset=10;
 				context.font = "bold 16px sans-serif";
-				//var sx=canvas.width/(order*25),sy=canvas.height/30;
-				for(i=1;i<=(2*order)-1;i++){
-					/*if (i%2==1){
-						context.fillStyle="#aa8833";
-						context.fillRect(x*sx,y*sy,k[i]*sx,length*sy);
-						context.fillStyle="#000000";
-						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-						x=x+k[i]/2;
-						y=y+length;
-					}else{
-						context.fillStyle="#aa8833";
-	    				context.fillRect(x*sx,y*sy,length*sx,k[i]*sy);
-						context.fillStyle="#000000";
-						context.fillText(Math.round(k[i]*1000)/1000,x*sx+20,y*sy+40);
-	    				x=x+length-(k[i+1]/2);
-	    				y=y-length;
-					}*/
-					//console.log(sx,sy,x,y,k[i],length,x*sx)
+				var sx=canvas.width/(order*35),sy=canvas.height/10;
+				for(i=1;i<=order;i++){
+					context.fillStyle="#aa8833";
+				context.fillRect(x*sx,y*sy+offset,length*sx,w[i]*sy);
+				y=y+w[i]+s[i];
+				context.fillRect(x*sx,y*sy+offset,length*sx,w[i]*sy);
+				x=x+length;
+				context.fillStyle="#000000";
+				context.fillText("w="+Math.round(w[i]*1000)/1000,x*sx+20,y*sy+80+offset);
 				}
+				context.fillStyle="#996611";
+				var length_feed_lines=Math.max.apply( Math, length );
+				var width_feed_lines=0.4*0.1588*10;
+				context.fillRect((20-length_feed_lines)*sx,(0.05+(width[1]/2)-(width_feed_lines/2))*sy+offset,(length_feed_lines)*sx,width_feed_lines*sy);
+				context.fillRect((x+length[order])*sx,(y+(width[order]/2)-(width_feed_lines/2))*sy+offset,length_feed_lines*sx,width_feed_lines*sy);
+				
+				y=y+w[order]-w[order+1];
+				context.fillRect(x*sx,y*sy+offset,length*sx,w[order+1]*sy)
+				y=y+w[order+1]+s[order+1];
+				context.fillRect(x*sx,y*sy+offset,length*sx,w[order+1]*sy)
+				context.fillRect((10-length)*sx,(5+w[1]-w_feed)*sy+offset,length*sx,w_feed*sy)
+				context.fillRect((x+length)*sx,y*sy,length*sx,w_feed*sy)
+
 				context.fillStyle="#bb9944";
-				//xlabel('Length in mm','fontsize',12,'fontweight','b');
-				//ylabel('Width in mm','fontsize',12,'fontweight','b');
-				//context.fillRect((20-length+k[1]/2)*sx,(1.8+length)*sy,length*sx,w_feed*sy);
-				//context.fillRect(x*sx,y*sy,length*sx,w_feed*sy);
 			
 			}else{//band stop
 				
@@ -494,20 +494,31 @@ $(function(){
 		});
 		C(window.page).show();
 		if(window.page>3){
-			
+			//create a new div to hold g values
 		}
 	};
 	alterspacing();
 	$(window).resize(alterspacing);
-	
-	container.find(".scrollnext").click(function(e){
-		e.preventDefault();
-		C(window.page+1).show();
-		$("#top-container").animate({"left":"-="+window.W},150,function(){
-			C(window.page).hide(function(){
-				$("#top-container").css("left","0px");
-				window.page++;
+
+	var submithandler = function(options) {
+		return function(e){
+			e.preventDefault();
+			
+			C(window.page+options.to).show(250);
+			$("#top-container").animate({"left":options.op+window.W},150,function(){
+				C(window.page).hide(function(){
+					$("#top-container").css("left","0px");
+					window.page+=options.to;
+				});
 			});
-		});
-	});
+		}
+	};
+	container.find(".scrollnext").click(submithandler({
+		"to":1,
+		"op":"-=",
+	}));
+	container.find(".scrollback").click(submithandler({
+		"to":-1,
+		"op":"+="
+	}))
 });

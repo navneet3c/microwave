@@ -67,9 +67,16 @@ input[type="text"],input[type="number"],select{
 	border-radius:5px;
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
-	box-shadow: 0 1px 2px rgba(255,255,255,.1), inset 0 1px 2px rgba(0,0,0,.4);
-	-moz-box-shadow: 0 1px 2px rgba(255,255,255,.1), inset 0 1px 2px rgba(0,0,0,.4);
-	-webkit-box-shadow: 0 1px 2px rgba(255,255,255,.1), inset 0 1px 2px rgba(0,0,0,.4);
+	box-shadow: 0 0 5px #3299bb, inset 0 1px 1px #000;
+	-moz-box-shadow: 0 0 5px #3299bb, inset 0 1px 1px #000;
+	-webkit-box-shadow: 0 0 5px #3299bb, inset 0 1px 1px #000;
+	-webkit-transition:background-color .5s ease-in;
+	-moz-transition:color 1s ease-in;
+	-o-transition:color 1s ease-in;
+	transition:color 1s ease-in;
+	-moz-transition:box-shadow 1s ease-in;
+	-o-transition:box-shadow 1s ease-in;
+	transition:box-shadow 1s ease-in;
 	color:#686868;
 	font-family:Helvetica, Arial, sans-serif;
 	height:35px;
@@ -78,16 +85,21 @@ input[type="text"],input[type="number"],select{
 	text-shadow:0 1px 0 #000;
 	width:255px;
 }
-input[type="text"],input[type="number"],select:focus{
+input[type="text"]:focus,input[type="number"]:focus,select:focus{
 	outline:none;
 	background-color:#272828;
 	color:#888888;
 	text-shadow:none;
+	box-shadow: 0 0 5px #AAFF00, inset 0 1px 1px #000;
+	-moz-box-shadow: 0 0 5px #AAFF00, inset 0 1px 1px #000;
 	-webkit-box-shadow: 0 0 5px #AAFF00, inset 0 1px 1px #000;
 	-webkit-transition:background-color .5s ease-in;
+	-moz-transition:box-shadow 1s ease-in;
+	-o-transition:box-shadow 1s ease-in;
+	transition:box-shadow 1s ease-in;
 	-moz-transition:color 2s ease-in;
-	-o-transition:color .3s ease-in;
-	transition:color .3s ease-in;
+	-o-transition:color 2s ease-in;
+	transition:color 2s ease-in;
 }
 input[type="number"]{
 	min-width: 230px;
@@ -106,6 +118,12 @@ input[type="submit"],button{
 }
 input[type="submit"]:hover{
 	background-color:#007d9a;
+}
+.scrollback{
+	float: left;
+}
+.scrollnext{
+	float: right;
 }
 .units{
 	min-width: 100px;
@@ -128,6 +146,11 @@ height: 100%;
 #lumped-output{
 	height: 250px;
 	overflow-y: auto;
+}
+#micro-output-output{
+	height: inherit;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 h2{
 	color: #3299bb;
