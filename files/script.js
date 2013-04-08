@@ -17,7 +17,7 @@ $(document).ready(function(){
 			$("#frequency-table-append").after("<tr id=\"band-central\">\
 							<td>Bandwidth in fraction of Central Frequency:</td>\
 							<td>\
-								<input type=\"number\" value=\"0.5\" name=\"delta\" step=\"0.05\">\
+								<input type=\"number\" value=\"0.1\" name=\"delta\" step=\"0.05\">\
 							</td>\
 						</tr>");
 		} else {
@@ -194,12 +194,16 @@ $(document).ready(function(){
 				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
-				x=5;
+				x=1;
 				offset=canvas.height/5;
 				context.font = "bold 10px sans-serif";
 				var length_feed_lines=Math.max.apply( Math, k );
 				var width_feed_lines=length
-				var sx=canvas.width/(order*length*2.5),sy=canvas.height/(width_feed_lines*2.5);
+				var sx=0,sy=canvas.height/(width_feed_lines*2.5);
+				for(i=0;i<=2*order;++i)
+					if(i%2==1) sx=sx+k[i];
+					else sx=sx+length;
+				sx=(canvas.width-10)/sx;
 				context.fillStyle="#996611";
 				y=0.5;
 				context.fillRect(x*sx,y*sy+offset,length*sx,sy);
@@ -210,7 +214,7 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,k[i]*sx,length*sy);
 					context.fillStyle="#000000";
-					context.fillText(Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset+(i%4)*10);
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx,y*sy+40+offset+(i%4)*5);
 				}else{
 					x=x+k[i-1];
 					context.fillStyle="#aa8833";
@@ -285,11 +289,13 @@ $(document).ready(function(){
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=1;
-				offset=canvas.height/4;
+				offset=canvas.height/3;
 				context.font = "bold 10px sans-serif";
-				var length_feed_lines=Math.max.apply( Math, length );
 				var width_feed_lines=Math.max.apply( Math, width )
-				var sx=canvas.width*Math.sqrt(order/3)/((order+2)*1.7*length_feed_lines),sy=canvas.height/(width_feed_lines*2);
+				var sx=0,sy=canvas.height/(width_feed_lines*3);
+				for(i=0;i<=order+1;++i)
+					sx=sx+length[i];
+				sx=(canvas.width-10)/sx;
 				context.fillStyle="#996611";
 				y=(width_feed_lines-width[0])/2;
 				context.fillRect(x*sx,y*sy+offset,length[0]*sx,width[0]*sy);
@@ -299,8 +305,8 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+5,y*sy+40+offset+(i%4)*20);
-					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx+5,y*sy+60+offset+(i%4)*20);
+					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx,y*sy+20+offset-(i%2)*20);
+					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx,y*sy+30+offset-(i%2)*40);
 				}
 				context.fillStyle="#996611";
 				x=x+length[i-1];
@@ -366,7 +372,7 @@ $(document).ready(function(){
 				var length_feed_lines=length;
 				w[0]=0;s[0]=0;
 				var width_feed_lines=Math.max.apply( Math, w )
-				var sx=canvas.width/((order+3)*length_feed_lines),sy=canvas.height/(width_feed_lines*order*3);
+				var sx=canvas.width/((order+3)*length_feed_lines),sy=canvas.height/(width_feed_lines*order*2);
 				y=0.2;x=1;
 				context.fillStyle="#996611";
 				context.fillRect(x*sx,y*sy+offset,length*sx/2,w[order+1]*sy);
@@ -375,12 +381,12 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length*sx,w[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(w[i]*1000)/1000,x*sx+20,y*sy+10+offset);
+					context.fillText("w="+Math.round(w[i]*1000)/1000,x*sx,y*sy+10+offset);
 					y=y+w[i]+s[i];
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length*sx,w[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("s="+Math.round(s[i]*1000)/1000,x*sx+20,y*sy+offset);
+					context.fillText("s="+Math.round(s[i]*1000)/1000,x*sx,y*sy+offset);
 					x=x+length;
 				}
 				context.fillStyle="#aa8833";
@@ -400,6 +406,7 @@ $(document).ready(function(){
 			
 		}else{//band stop
 				//k starts from 1, l for lpf, c for hpf
+				console.log(g)
 				var N=1+(1/g[1][0]),j,z_half,alpha;
 				alpha=1/Math.tan(Math.PI*(1-delta/2)/2);
 					for(i=g.length-2;i>0;i--){
@@ -452,7 +459,7 @@ $(document).ready(function(){
 					w_feed=w2_feed;
 				//drawing canvas
 				
-				
+				console.log(k)
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
 				canvas.width = 520;
