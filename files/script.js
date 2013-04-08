@@ -6,7 +6,7 @@ $(document).ready(function(){
 			$("#frequency-table-append").after("<tr>\
 							<td>Passband ripple (dB) :</td>\
 							<td>\
-								<input type=\"number\" name=\"ripple\" value=\"0.5\">\
+								<input type=\"number\" name=\"ripple\" value=\"0.05\">\
 							</td>\
 						</tr>");
 	});
@@ -15,9 +15,9 @@ $(document).ready(function(){
 		if($(this).val()>2){
 			if($("#band-central").length === 0)
 			$("#frequency-table-append").after("<tr id=\"band-central\">\
-							<td>Bandwidth in percentage of Central Frequency:</td>\
+							<td>Bandwidth in fraction of Central Frequency:</td>\
 							<td>\
-								<input type=\"number\" value=\"0.1\" name=\"delta\" step=\"0.05\">\
+								<input type=\"number\" value=\"0.5\" name=\"delta\" step=\"0.05\">\
 							</td>\
 						</tr>");
 		} else {
@@ -190,8 +190,8 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = 420;
-				canvas.height= 300;
+				canvas.width = 520;
+				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=5;
@@ -210,13 +210,13 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,k[i]*sx,length*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset);
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset+(i%4)*10);
 				}else{
 					x=x+k[i-1];
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length*sx,k[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(length*1000)/1000,x*sx+5,y*sy-10+offset);
+					context.fillText(Math.round(k[i]*1000)/1000,x*sx+5,y*sy-10+offset-(i%4)*10);
 				}
 				}
 				context.fillStyle="#996611";
@@ -280,8 +280,8 @@ $(document).ready(function(){
 				
 				var canvas=document.getElementById("microcanvas");
 				var context = canvas.getContext('2d');
-				canvas.width = 420;
-				canvas.height= 300;
+				canvas.width = 520;
+				canvas.height= 400;
 				context.fillStyle="#FFFFFF";
 				context.fillRect(0,0,canvas.width,canvas.height);
 				x=1;
@@ -289,7 +289,7 @@ $(document).ready(function(){
 				context.font = "bold 10px sans-serif";
 				var length_feed_lines=Math.max.apply( Math, length );
 				var width_feed_lines=Math.max.apply( Math, width )
-				var sx=canvas.width/((order+1)*length_feed_lines),sy=canvas.height/(width_feed_lines*2);
+				var sx=canvas.width*Math.sqrt(order/3)/((order+2)*1.7*length_feed_lines),sy=canvas.height/(width_feed_lines*2);
 				context.fillStyle="#996611";
 				y=(width_feed_lines-width[0])/2;
 				context.fillRect(x*sx,y*sy+offset,length[0]*sx,width[0]*sy);
@@ -299,8 +299,8 @@ $(document).ready(function(){
 					context.fillStyle="#aa8833";
 					context.fillRect(x*sx,y*sy+offset,length[i]*sx,width[i]*sy);
 					context.fillStyle="#000000";
-					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+5,y*sy+40+offset);
-					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx+5,y*sy+60+offset);
+					context.fillText("w="+Math.round(width[i]*1000)/1000,x*sx+5,y*sy+40+offset+(i%4)*20);
+					context.fillText("l="+Math.round(length[i]*1000)/1000,x*sx+5,y*sy+60+offset+(i%4)*20);
 				}
 				context.fillStyle="#996611";
 				x=x+length[i-1];
@@ -309,22 +309,14 @@ $(document).ready(function(){
 			}
 		}else{//coupled for bp and br
 			delta=parseFloat($("#frequency-form-container input[name=delta]").val());
-			var ZJ=new Array();
 			if(filter==3){//band pass
 				//compute even mode and odd mode impedance
+				var ZJ=new Array();
 				ZJ[1]=Math.sqrt(Math.PI*delta/(2*g[1][0]*g[0][0]));
 				for(i=2;i<=g.length-2;i++){
 					ZJ[i]=Math.PI*delta/(2*Math.sqrt(g[i-1][0]*g[i][0]));
 				}
 				ZJ[i]=Math.sqrt(Math.PI*delta/(2*g[i-1][0]*g[i][0]));
-			}else{//band stop
-				ZJ[1]=Math.sqrt(Math.PI/(2*delta*g[1][0]*g[0][0]));
-				for(i=2;i<=g.length-2;i++){
-					ZJ[i]=Math.PI/(2*delta*Math.sqrt(g[i-1][0]*g[i][0]));
-				}
-				ZJ[i]=Math.sqrt(Math.PI/(delta*2*g[i-1][0]*g[i][0]));
-			}
-				//Implementation of Nomogram Equations to find the WIDTH and SPACING
 				var d,z_o,w_hse,w_hso;
 				var s=new Array();
 				var w=new Array();
@@ -338,17 +330,16 @@ $(document).ready(function(){
 					return Math.log(arg + Math.sqrt(arg * arg - 1));
 				}
 				for(i=1;i<g.length;i++){
-					z_o=r0*(1+ZJ[i]+(Math.pow(ZJ[i],2)));
+					z_o=r0*(1+ZJ[i]+(Math.pow(ZJ[i],2)))/2;
 					d=60*Math.PI*Math.PI/(z_o*Math.sqrt(Er));
 					w_hse=(2/Math.PI)*(d-1)-(2/Math.PI)*Math.log(2*d-1)+(Er-1)*(Math.log(d-1)+0.293-0.517/Er)/(Math.PI*Er);
 					
-					z_o=r0*(1-ZJ[i]+(Math.pow(ZJ[i],2)));
+					z_o=r0*(1-ZJ[i]+(Math.pow(ZJ[i],2)))/2;
 					d=60*Math.PI*Math.PI/(z_o*Math.sqrt(Er));
 					w_hso=(2/Math.PI)*(d-1)-(2/Math.PI)*Math.log(2*d-1)+(Er-1)*(Math.log(d-1)+0.293-0.517/Er)/(Math.PI*Er);
 					
 					s_h[i]=(2/Math.PI)*acosh((cosh((Math.PI/2)*w_hse)+cosh((Math.PI/2)*w_hso)-2)/(cosh((Math.PI/2)*w_hso)-cosh((Math.PI/2)*w_hse)));
 					w_h[i]=(1/Math.PI)*(acosh(0.5*((cosh(Math.PI*0.5*s_h[i])-1)+((cosh(Math.PI*0.5*s_h[i])+1)*cosh(Math.PI*0.5*w_hse))))-(Math.PI*0.5*s_h[i]));
-					console.log(z_o,d,w_hso,w_hse,s_h[i],w_h[i],Math.log(2*d-1)+(Er-1)*(Math.log(d-1)+0.293-0.517/Er))
 				}
 				for(i=1;i<g.length;i++){
 					s[i]=s_h[i]*0.1588*10;
@@ -376,7 +367,7 @@ $(document).ready(function(){
 				w[0]=0;s[0]=0;
 				var width_feed_lines=Math.max.apply( Math, w )
 				var sx=canvas.width/((order+3)*length_feed_lines),sy=canvas.height/(width_feed_lines*order*3);
-				y=0.5;x=1;
+				y=0.2;x=1;
 				context.fillStyle="#996611";
 				context.fillRect(x*sx,y*sy+offset,length*sx/2,w[order+1]*sy);
 				x=x+length/2;
@@ -391,7 +382,6 @@ $(document).ready(function(){
 					context.fillStyle="#000000";
 					context.fillText("s="+Math.round(s[i]*1000)/1000,x*sx+20,y*sy+offset);
 					x=x+length;
-					console.log(sx,sy,x,y,s[i],w[i],w,width_feed_lines) 
 				}
 				context.fillStyle="#aa8833";
 				y=y+w[order]-w[order+1];
@@ -408,9 +398,113 @@ $(document).ready(function(){
 				x=x+length;
 				context.fillRect(x*sx,y*sy+offset,length*sx/2,w[order+1]*sy);
 			
-		}
+		}else{//band stop
+				//k starts from 1, l for lpf, c for hpf
+				var N=1+(1/g[1][0]),j,z_half,alpha;
+				alpha=1/Math.tan(Math.PI*(1-delta/2)/2);
+					for(i=g.length-2;i>0;i--){
+						g[i][0]=g[i][0]*alpha*2*Math.PI*delta;
+					}
+				k[1]=N;
+				k[2]=g[1][0]*N;
+				j=3;
+				for(i=2;i<g.length-2;i++){
+					if(i%2==1){
+						z_half=g[i][0]/2;
+						N=1+(1/z_half);
+						k[j]=N*z_half;
+						k[j+1]=0.5*N;
+						k[j+2]=k[j];
+						j=j+2;
+					}else
+						k[j]=g[i][0];
+					j=j+1;
+				}
+				N=1+(1/g[i][0]);        
+				k[j]=g[i][0]*N;
+				k[j+1]=N;
+				for(i=k.length-1;i>0;i--){
+					k[i]*=50;
+				}
+				k[0]=50;
+				k[k.length]=50;
+				//h=0.1588=1/16 of inch
+				var A,B,w1,w2,w1_feed,w2_feed,z_feed,length,w_feed;
+				for(i=0;i<=2*order;++i){
+					A=((k[i]/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er))));
+					B=60*Math.PI*Math.PI/(k[i]*Math.sqrt(Er));
+					w1=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+					w2=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+					if (w1<=2*1.588)
+						k[i]=w1;
+					else
+						k[i]=w2;
+				}
+				length=3e11/(fc*4*Math.sqrt(Er));
+				z_feed=r0;//feed
+				A=(z_feed/60)*Math.sqrt((Er+1)/2)+(((Er-1)/(Er+1))*(0.23+(0.11/Er)));
+				B=60*Math.PI*Math.PI/(z_feed*Math.sqrt(Er));
+				w1_feed=0.1588*10*8*Math.exp(A)/(Math.exp(2*A)-2);
+				w2_feed=(0.1588*10*2/Math.PI)*(B-1-Math.log(2*B-1)+((Er-1)/(2*Er))*(Math.log(B-1)+0.39-0.61/Er));
+				if (w1_feed<=2*1.588)
+					w_feed=w1_feed;
+				else
+					w_feed=w2_feed;
+				//drawing canvas
+				
+				
+				var canvas=document.getElementById("microcanvas");
+				var context = canvas.getContext('2d');
+				canvas.width = 520;
+				canvas.height= 400;
+				context.fillStyle="#FFFFFF";
+				context.fillRect(0,0,canvas.width,canvas.height);
+				x=5;
+				offset=canvas.height/2;
+				context.font = "bold 10px sans-serif";
+				var length_feed_lines=Math.max.apply( Math, k );
+				var width_feed_lines=length
+				var sx=canvas.width/(order*length*3.2),sy=canvas.height/(width_feed_lines*2.5);
+				context.fillStyle="#996611";
+				y=0.5;
+				context.fillRect(x*sx,y*sy+offset,length*sx,sy);
+				y=1;
+				x=x-length*2
+				j=0
+				for(i=1;i<2*order;i++){
+				if(i%2==1){
+					x=x+length*3;
+					context.fillStyle="#aa8833";
+					if(j==1){
+					context.fillRect(x*sx,(y-length+k[i-1])*sy+offset,k[i]*sx,length*sy);
+					context.fillStyle="#000000";
+					context.fillText("w="+Math.round(k[i]*1000)/1000,x*sx+5,(y-length)*sy+40+offset);
+					j=0;
+					}
+					else{
+					j=1;
+					context.fillRect(x*sx,y*sy+offset,k[i]*sx,length*sy);
+					context.fillStyle="#000000";
+					context.fillText("w="+Math.round(k[i]*1000)/1000,x*sx+5,y*sy+40+offset);
+					}
+				}else{
+					x=x+k[i-1];
+					context.fillStyle="#aa8833";
+					context.fillRect(x*sx,y*sy+offset,length*3*sx,k[i]*sy);
+					context.fillStyle="#000000";
+					context.fillText("w="+Math.round(length*1000)/1000,x*sx+5,y*sy-10+offset);
+				}
+				}
+				context.fillStyle="#996611";
+				if(i%2==1)
+					x=x+length;
+				else
+					x=x+k[i-1];
+				y=0.5;
+				context.fillRect(x*sx,y*sy+offset,length*sx,sy);
+			}
 			
-		
+		}
 	});
 });
 
